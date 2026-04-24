@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<h1 class="text-center mb-3" th:text="|Avance curricular del grupo ${claveGrupo}|"></h1>
+<div class="container mt-4">
+    <table id="practicasTable" class="table table-striped table-border">
+        <thead class="table-dark">
+        <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Materia</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Descripcion</th>
+            <th sec:authorize="!hasAnyAuthority('Docencia')"></th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        <th:block th:each="item, iterStat : ${practicas}">
+            <tr>
+                <td>
+                    <button class="btn btn-sm btn-secondary"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            th:data-bs-target="'#detalle-' + ${iterStat.index}">
+                        +
+                    </button>
+                    <span th:text="${item.practica.nombre ?: ''}"></span>
+                </td>
+                <td th:text="${item.practica.materia.nombreMateria ?: ''}"></td>
+                <td th:text="${item.avance.estado ?:'Pendiente'}"></td>
+                <td>
+                    <div th:if="${item.practica.archivo != null}">
+                        <a class="btn btn-sm btn-outline-primary"
+                           th:href="@{'/practicas/pdf/'+${item.practica.IDPracticas}}"
+                           target="_blank">Ver <i class="fa fa-eye"></i></a>
+                    </div>
+                    <a class="btn btn-sm btn-outline-success"
+                       th:href="@{'/practicas/pdf/'+${item.practica.IDPracticas}}">
+                        Descargar <i class="fa fa-download"></i>
+                    </a>
+                </td>
+                <td sec:authorize="!hasAnyAuthority('Docencia')">
+                    <a th:href="@{/practicas/asignacion/asignar/{id}(id=${item.practica.IDPracticas}, claveGrupo=${claveGrupo})}"
+                       class="btn btn-primary btn-sm">modificar</a>
+                </td>
+            </tr>
+            <tr class="collapse-row">
+                <td colspan="5" class="p-0 border-0">
+                    <div class="collapse"
+                         th:id="'detalle-' + ${iterStat.index}">
+                        <div class="card card-body m-2">
+                            <h6>Asignación</h6>
+                            <p>
+                                <strong>Grupo:</strong>
+                                <span th:text="${item.asignacion?.claveGrupo?.claveGrupo}"></span>
+                                |
+                                <strong>Fecha:</strong>
+                                <span th:text="${#dates.format(item.asignacion?.fecha,'dd-MM-yyyy')}"></span>
+                                |
+                                <strong>Estado:</strong>
+                                <span th:text="${item.asignacion?.estado}"></span>
+                                |
+                                <strong>Lugar</strong>
+                                <span th:text="${item.asignacion?.lugar?.nombre}"></span>
+                            </p>
+                            <h6>Insumos</h6>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Numero de serie</th>
+                                    <th>Modelo</th>
+                                    <th>Descripción</th>
+                                    <th>Categoría</th>
+                                    <th>Marca</th>
+                                    <th>Fecha de ultimo mantenimiento</th>
+                                    <th>Ubicación</th>
+                                    <th>Estado</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="insumo : ${item.insumos}">
+                                    <td th:text="${insumo.numeroSerie}"></td>
+                                    <td th:text="${insumo.modelo}"></td>
+                                    <td th:text="${insumo.descripcion}"></td>
+                                    <td th:text="${insumo.categoria}"></td>
+                                    <td th:text="${insumo.marca}"></td>
+                                    <td th:text="${#temporals.format(insumo.fechaUltimoMantenimiento, 'dd-MM-yyyy')}"></td>
+                                    <td th:text="${insumo.ubicacion}"></td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${insumo.estado == 'Disponible'} ? 'bg-success' : 'bg-warning'"
+                                              th:text="${insumo.estado}"></span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(item.insumos)}">
+                                    <td colspan="8" class="text-center text-muted">Sin insumos</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </th:block>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{listas/dataTable::dataTable('practicasTable')}"></footer>
+<script>
+    $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
+        console.warn("DataTables error:", message);
+    };
+</script>
+</body>
+</html>

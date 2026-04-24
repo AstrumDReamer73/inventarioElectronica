@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<style>
+    td { vertical-align: top;}
+
+    th, td { width: calc(100%/7); overflow:hidden; }
+
+    .card { width:100%; overflow:hidden;}
+
+    .card-body{
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+
+    .card-body {
+        padding:4px;
+        font-seize:0.8rem;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+</style>
+<header th:replace="~{index::navbar}"></header>
+<div class="container mt-4">
+    <h2 class="text-center mb-3" th:text="|Horario del ${salon}|"></h2>
+    <div class="text-end mb-3">
+        <a class="btn btn-success"
+           th:href="@{/grupos/registrar}"
+           sec:authorize="!hasAnyAuthority('Docencia')">Registrar Grupo
+        </a>
+    </div>
+    <div th:replace="~{listas/listaArticulos::success}"></div>
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-dark">
+            <tr>
+                <th>Hora</th>
+                <th th:each="dia : ${diasSemana}"
+                    th:text="${#strings.capitalize(dia)}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="hora : ${horas}">
+                <td class="fw-bold" th:text="|${hora} - ${hora.plusHours(1)}|"></td>
+                <td th:each="dia : ${diasSemana}">
+                    <div th:each="grupo : ${grupos}"
+                         th:if="${grupo.ocurreEn(dia,hora)}"
+                         class="card border-danger mb-1">
+                        <div class="card-body p-2">
+                            <div class="fw-bold" th:text="${grupo.nombreMateria}"></div>
+                            <div th:text="${grupo.claveGrupo}"></div>
+                            <div class="text-muted" th:text="${grupo.nombre}"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

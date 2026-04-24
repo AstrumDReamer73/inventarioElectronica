@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div class="container mt-3">
+    <div class="card shadow mb-4">
+        <div class="card-header text-center">
+            <h4>Paso 3: Asignación de insumos</h4>
+            <small class="text-muted">Seleccione un artículo disponible</small>
+        </div>
+        <div class="card-body">
+            <form th:action="@{${accion3}}" method="post" class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label" for="descripcion">Descripción</label>
+                    <input type="text" class="form-control" id="descripcion" list="insumosList" autocomplete="off"
+                           placeholder="Buscar un articulo por descripcion">
+                    <datalist id="insumosList">
+                        <option th:each="insumo : ${insumos}"
+                                th:value="${insumo.numeroSerie}"
+                                th:text="${insumo.descripcion + ' - ' + insumo.modelo}">
+                        </option>
+                    </datalist>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="numeroSerie">Numero de serie</label>
+                    <input type="text" class="form-control" id="numeroSerie" name="numeroSerie" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="modelo">Modelo</label>
+                    <input type="text" class="form-control" id="modelo" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="categoria">Categoría</label>
+                    <input type="text" class="form-control" id="categoria" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" for="marca">Marca</label>
+                    <input type="text" class="form-control" id="marca" readonly>
+                </div>
+                <div class="col-md-12 text-end">
+                    <button type="submit" class="btn btn-primary">Asignar artículo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="card shadow">
+        <div class="card-header"><h5 class="text-center">Insumos seleccionados</h5></div>
+        <div class="card-body">
+            <table id="articulosDispTable" class="table table-hover table-striped table-bordered table-lg">
+                <thead class="table-dark table-striped-columns">
+                <tr>
+                    <th scope="col">Numero de serie</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Descripcion</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Ubicacion</th>
+                    <th scope="col">Fecha del ultimo mantenimiento</th>
+                    <th scope="col">Estado</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                <tr th:each="insumosAsignado:${insumosAsignados}">
+                    <td th:text="${insumosAsignado.numeroSerie}"></td>
+                    <td th:text="${insumosAsignado.modelo}"></td>
+                    <td th:text="${insumosAsignado.descripcion}"></td>
+                    <td th:text="${insumosAsignado.categoria}"></td>
+                    <td th:text="${insumosAsignado.marca}"></td>
+                    <td th:text="${insumosAsignado.ubicacion}"></td>
+                    <td th:text="${insumosAsignado.fechaUltimoMantenimiento}"></td>
+                    <td>
+                        <span th:if="${titulo != 'editar'}" th:text="${insumosAsignado.estado}"></span>
+                        <select th:if="${titulo == 'editar'}" th:field="*{estado}" class="form-select" id="insumos">
+                            <option th:value="En mantenimiento">Necesita mantenimiento</option>
+                            <option th:value="Disponible">Disponible</option>
+                        </select>
+                    </td>
+                    <td>
+                        <form th:action="@{${accion3} + '/eliminar'}" method="post">
+                            <input type="hidden" name="numeroSerie"
+                                   th:value="${insumosAsignado.numeroSerie}">
+                            <button class="btn btn-danger btn-sm">X</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <a class="btn btn-success"
+               th:href="@{/practicas/confirmar}">A la pantalla de confirmacion</a>
+            <a class="btn btn-danger"
+               th:href="@{/practicas}"
+               onclick="return confirm(¿Esta seguro que desea cancelar el registro?, los datos no se guardaran')">Cancelar registro</a>
+        </div>
+    </div>
+</div>
+</body>
+<footer th:replace="~{listas/dataTable::dataTable('articulosDispTable')}"></footer>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const descripcionInput = document.getElementById("descripcion");
+        const submitBtn = document.querySelector("form button[type='submit']");
+        const numeroSerieInput = document.getElementById("numeroSerie");
+
+        submitBtn.disabled = true;
+
+        descripcionInput.addEventListener("input", () => { submitBtn.disabled = descripcionInput.value.trim() === ""; });
+
+        descripcionInput.addEventListener("change", function () {
+            const numeroSerie = this.value.trim();
+            if (!numeroSerie) {
+                alert("Debe seleccionar un artículo de la lista");
+                this.value = "";
+                submitBtn.disabled = true;
+                return;
+            }
+
+            const opciones = Array.from(document.querySelectorAll("#insumosList option"))
+                                  .map(opt => opt.value);
+            if (!opciones.includes(numeroSerie)) {
+                alert("El valor ingresado no corresponde a un artículo válido");
+                this.value = "";
+                submitBtn.disabled = true;
+                return;
+            }
+
+            fetch(`/articulos/articulo/${numeroSerie}`)
+                .then(response => {
+                    if (!response.ok) throw new Error("No encontrado");
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("modelo").value = data.modelo ?? "";
+                    document.getElementById("marca").value = data.marca ?? "";
+                    document.getElementById("categoria").value = data.categoria ?? "";
+                    numeroSerieInput.value = data.numeroSerie ?? "";
+                    descripcionInput.value = data.descripcion ?? "";
+                    submitBtn.disabled = false; // habilitar botón
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("No se encontró el artículo");
+                    submitBtn.disabled = true;
+                });
+        });
+    });
+</script>
+</html>

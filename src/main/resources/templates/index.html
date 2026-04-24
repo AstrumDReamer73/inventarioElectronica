@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <title>app de inventario</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+          rel="stylesheet" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<style th:fragment="style"> body{ background-color: #fefdeb; }</style>
+<header th:fragment="navbar">
+    <nav class="navbar bg-body-tertiary border-bottom">
+        <div class="container-fluid d-flex align-items-center">
+            <div class="d-flex gap-2">
+                <img th:src="@{/img/logo-TecNM.png}"
+                     alt="Logo TecNM" height="70">
+                <img th:src="@{/img/logo-ITCM-navbar.png}"
+                     alt="Logo ITCM" height="70">
+            </div>
+            <div class="d-flex align-items-center ms-3 gap-3">
+                <a class="navbar-brand mb-0" th:href="@{/index}">app de inventario</a>
+                <a class="nav-link" th:href="@{/articulos}">Artículos</a>
+            </div>
+            <div class="ms-auto d-flex align-items-center gap-2">
+                <i class="fa-solid fa-user"></i>
+                <div class="d-flex flex-column lh-sm">
+                    <span th:text="${usuarioActual.nombre}">Nombre de Usuario</span>
+                    <small th:text="${#lists.contains({'Jefe','Personal'}, usuarioActual.rol)}
+                                  ? ${usuarioActual.rol + ' de laboratorio'} : ${usuarioActual.rol}">rol</small>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+<div class="container mt-4">
+    <div class="text-center mb-4"><h1>Bienvenido</h1></div>
+    <div th:replace="~{listas/listaArticulos::success}"></div>
+    <div class="row">
+        <div class="col-md-6">
+            <a sec:authorize="hasAnyAuthority('Jefe','Maestro','Personal','Docencia')" th:href="@{/articulos}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-cubes"></i>
+                        <h5>lista de productos</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Maestro','Personal','Docencia')" th:href="@{/mantenimiento}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-hammer"></i>
+                        <h5>lista de equipos en mantenimiento</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Maestro','Docencia')" th:href="@{/practicas}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-explosion"></i>
+                        <h5>lista de practicas</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Maestro','Docencia','Personal')" th:href="@{/grupos}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-school-flag"></i>
+                        <h5>lista de salones</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Docencia')" th:href="@{/usuarios}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-regular fa-circle-user"></i>
+                        <h5>lista de usuarios</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-md-6">
+            <a sec:authorize="hasAnyAuthority('Jefe','Personal')" th:href="@{/articulos/registrar}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-box-open"></i>
+                        <h5>registrar productos</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Personal')" th:href="@{/mantenimiento/registrar}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-gears"></i>
+                        <h5>registrar equipo en mantenimiento</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Maestro')" th:href="@{/practicas/registrar}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-regular fa-clipboard"></i>
+                        <h5>registrar practica</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe','Maestro')" th:href="@{/grupos/registrar}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-book-medical"></i>
+                        <h5>registrar grupos</h5>
+                    </div>
+                </div>
+            </a>
+            <a sec:authorize="hasAnyAuthority('Jefe')" th:href="@{/usuarios/registrar}">
+                <div class="card card-sh">
+                    <div class="card-body text-center">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <h5>registrar usuario</h5>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <a sec:authorize="hasAnyAuthority('Jefe')" th:href="@{/admin/backup}">Descargar respaldo de la base de datos</a>
+    <form sec:authorize="hasAnyAuthority('Jefe')" th:action="@{/admin/restore/upload}" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".bak" required>
+        <button type="submit" class="btn btn-primary">Restaurar backup</button>
+    </form>
+</div>
+</body>
+<script th:replace="~{listas/listaArticulos::script}"></script>
+</html>

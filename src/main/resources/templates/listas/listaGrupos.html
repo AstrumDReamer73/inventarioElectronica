@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<div class="container mt-4">
+    <div th:replace="~{listas/listaArticulos::success}"></div>
+    <h2 class="text-center mb-3" th:text="|Lista de Grupos del ${salon}|"></h2>
+    <div class="text-end mb-3">
+        <a class="btn btn-success"
+           th:href="@{/grupos/registrar}"
+           sec:authorize="!hasAuthority('Docencia')">Registrar Grupo</a>
+    </div>
+    <div th:replace="~{listas/listaArticulos::success}"></div>
+    <div class="table-responsive">
+        <table id="gruposTable" class="table-striped table-bordered table">
+            <thead class="table-dark table-striped-columns">
+            <tr>
+                <th class="col">Clave de grupo</th>
+                <th class="col">Materia</th>
+                <th class="col">Maestro Encargado</th>
+                <th class="col">Horario</th>
+                <th class="col">Dias que esta en el laboratorio</th>
+                <th sec:authorize="!hasAnyAuthority('Docencia')"></th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider align-middle">
+            <tr id="usuariosTable" th:each="grupo:${grupos}">
+                <td th:text="${grupo.claveGrupo}"></td>
+                <td th:text="${grupo.nombreMateria}"></td>
+                <td th:text="${grupo.nombre}"></td>
+                <td th:text="|${grupo.horaEntrada} - ${grupo.horaSalida}|"></td>
+                <td th:text="${grupo.dias}"></td>
+                <td sec:authorize="!hasAnyAuthority('Docencia','Personal')">
+                    <a class="btn btn-secondary btn-sm mb-1"
+                       th:href="@{'/grupos/avanceCurricular/'+${grupo.claveGrupo}}"
+                       th:if="${grupo.numeroControl == usuarioActual.numeroControl or usuarioActual.rol == 'Jefe'}">
+                        Ver avance curricular
+                    </a>
+                    <a class="btn btn-warning btn-sm mb-1"
+                       th:href="@{'/grupos/editar/' + ${grupo.claveGrupo}}"
+                       th:if="${grupo.numeroControl == usuarioActual.numeroControl or usuarioActual.rol == 'Jefe'}">
+                        Editar Grupo
+                    </a>
+                    <a class="btn btn-danger btn-sm mb-1"
+                       onclick="return confirm('¿Estás seguro?')"
+                       th:href="@{'/grupos/eliminar/'+${grupo.claveGrupo}}"
+                       th:if="${grupo.numeroControl == usuarioActual.numeroControl or usuarioActual.rol == 'Jefe'}">
+                        Eliminar Grupo
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<footer th:replace="~{listas/dataTable::dataTable('gruposTable')}"></footer>
+<script th:replace="~{listas/listaArticulos::script}"></script>
+</body>
+</html>

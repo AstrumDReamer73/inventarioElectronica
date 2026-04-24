@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<h1 class="text-center">Lista de salones</h1>
+<div class="container mt-4">
+    <h3 class="text-center mb-4">Seleccione un salón</h3>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card card-sh h-100">
+                <div class="text-center p-2">
+                    <h4>Salon A</h4>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a class="btn btn-primary" th:href="@{grupos/listaGrupos/Salon A}">Lista de grupos</a>
+                        <a class="btn btn-primary" th:href="@{grupos/horario/Salon A}">Horario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-sh h-100">
+                <div class="text-center p-2">
+                    <h4>Salon B</h4>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a class="btn btn-primary" th:href="@{grupos/listaGrupos/Salon B}">Lista de grupos</a>
+                        <a class="btn btn-primary" th:href="@{grupos/horario/Salon B}">Horario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-sh h-100">
+                <div class="text-center p-2">
+                    <h4>Salon C</h4>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a class="btn btn-primary" th:href="@{grupos/listaGrupos/Salon C}">Lista de grupos</a>
+                        <a class="btn btn-primary" th:href="@{grupos/horario/Salon C}">Horario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-sh h-100">
+                <div class="text-center p-2">
+                    <h4>Salon D</h4>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a class="btn btn-primary" th:href="@{grupos/listaGrupos/Salon D}">Lista de grupos</a>
+                        <a class="btn btn-primary" th:href="@{grupos/horario/Salon D}">Horario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-sh h-100">
+                <div class="text-center p-2">
+                    <h4>Salon E</h4>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a class="btn btn-primary" th:href="@{grupos/listaGrupos/Salon E}">Lista de grupos</a>
+                        <a class="btn btn-primary" th:href="@{grupos/horario/Salon E}">Horario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card card-sh h-100">
+                <div class="text-center p-2">
+                    <h4>Laboratorio de cómputo</h4>
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        <a class="btn btn-primary" th:href="@{grupos/listaGrupos/Laboratorio de computo}">Lista de grupos</a>
+                        <a class="btn btn-primary" th:href="@{grupos/horario/Laboratorio de computo}">Horario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <h1 class="text-center">Lista de mesas</h1>
+        <div class="container mt-4">
+            <div class="row">
+                <div th:each="mesa:${mesas}" class="col-md-4 mb-3">
+                    <div class="card card-sh h-100">
+                        <div class="text-center p-2">
+                            <h4 th:text="${mesa.mesa.nombre}"></h4>
+                            <h5 th:text="${mesa.mesa.estado}"></h5>
+
+                            <p th:if="${mesa.mesa.estado=='Disponible'}">
+                                Fecha del último mantenimiento:
+                                <span th:text="${#dates.format(mesa.mesa.fechaUltimoMantenimiento, 'dd-MM-yyyy')}"></span>
+                            </p>
+                            <p th:if="${mesa.mesa.estado=='Disponible'}">
+                                Fecha del próximo mantenimiento:
+                                <span th:text="${#dates.format(mesa.mesa.fechaProximoMantenimiento, 'dd-MM-yyyy')}"></span>
+                            </p>
+
+                            <p th:if="${mesa.mesa.estado=='En mantenimiento'}">
+                                Fecha de salida:
+                                <span th:text="${#dates.format(mesa.mesa.fechaSalidaMantenimiento, 'dd-MM-yyyy')}"></span>
+                            </p>
+                            <p th:if="${mesa.mesa.estado=='En mantenimiento'}">
+                                Personal encargado:
+                                <span th:text="${mesa.mesa.nombrePersonal ?: ''}"></span>
+                            </p>
+
+                            <div class="content-center text-center">
+                                <a class="btn btn-warning"
+                                   th:if="${mesa.puedeLiberar}"
+                                   th:href="@{'/lugar/habilitar/'+${mesa.mesa.IDLugar}}">Liberar</a>
+
+                                <a class="btn btn-warning"
+                                   th:if="${mesa.puedeEnviar}"
+                                   th:href="@{'/lugar/mantenimiento/'+${mesa.mesa.IDLugar}}">Enviar a mantenimiento</a>
+
+                                <a th:href="@{'/lugar/expediente/'+${mesa.mesa.IDLugar}}"
+                                   class="btn btn-primary mt-2">Ver expediente</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</html>

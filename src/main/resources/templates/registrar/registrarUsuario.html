@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div class="container mt-4">
+    <h2 class="text-center" th:text="${titulo}"></h2>
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header text-center"><h5>Datos del usuario</h5></div>
+                <form class="card-body" th:object="${usuario}" method="post" th:action="@{${accion}}">
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="numeroControl">Número de control</label>
+                        <div class="col-md-8">
+                            <input th:if="${titulo == 'Registrar usuario'}"
+                                   th:field="*{numeroControl}" id="numeroControl"
+                                   type="text" class="form-control" required
+                                   placeholder="Numero de control del usuario">
+                            <p class="form-control" th:if="${titulo == 'Editar usuario'}" th:text="${usuario.numeroControl}"></p>
+                            <small th:if="${#fields.hasErrors('numeroControl')}"
+                                   th:errors="*{numeroControl}"
+                                   class="form-text text-danger"></small>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="nombre">Nombre completo</label>
+                        <div class="col-md-8">
+                            <input th:field="*{nombre}" id="nombre"
+                                   type="text" class="form-control" required
+                                   placeholder="Nombre completo del usuario">
+                            <small th:if="${#fields.hasErrors('nombre')}"
+                                   th:errors="*{nombre}"
+                                   class="form-text text-danger"></small>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="correo">Correo electrónico</label>
+                        <div class="col-md-8">
+                            <input th:field="*{correo}" id="correo"
+                                   type="email" class="form-control" required
+                                   placeholder="correo@ejemplo.com">
+                            <small th:if="${#fields.hasErrors('correo')}"
+                                   th:errors="*{correo}"
+                                   class="form-text text-danger"></small>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="telefono">Teléfono</label>
+                        <div class="col-md-8">
+                            <input th:field="*{telefono}" id="telefono"
+                                   type="tel" class="form-control" required
+                                   placeholder="ingrese el telefono">
+                            <small th:if="${#fields.hasErrors('telefono')}"
+                                   th:errors="*{telefono}"
+                                   class="form-text text-danger"></small>
+                        </div>
+                    </div>
+                    <div th:if="${usuarioActual.numeroControl == usuario.numeroControl or titulo == 'Registrar usuario'}" class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="password">Contraseña</label>
+                        <div class="col-md-8">
+                            <div class="input-group">
+                                <input type="password" th:field="*{passwordHash}" class="form-control"
+                                       id="password" placeholder="Contraseña del usuario" required>
+                                <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">👁</button>
+                                <small th:if="${#fields.hasErrors('passwordHash')}"
+                                       th:errors="*{passwordHash}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center" sec:authorize="hasAuthority('Jefe')">
+                        <label class="col-md-4 col-form-label" for="rol">Cargo</label>
+                        <div class="col-md-8">
+                            <select th:field="*{rol}" class="form-select"  id="rol" required>
+                                <option value="" disabled selected>Seleccione un cargo</option>
+                                <option value="Jefe">Jefe de laboratorio</option>
+                                <option value="Personal">Personal de laboratorio</option>
+                                <option value="Maestro">Maestro</option>
+                                <option value="Docencia">Docencia</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success flex-fill" th:text="${titulo}"></button>
+                        <a th:href="@{'/usuarios/eliminar/' + ${usuario.numeroControl}}"
+                           onclick="return confirm('¿Está seguro que desea cancelar el registro?')"
+                           class="btn btn-danger flex-fill">Cancelar registro</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    document.getElementById("nombre").addEventListener("input", function() { this.value = this.value.replace(/\b\w/g, c => c.toUpperCase());});
+    document.getElementById("telefono").addEventListener("input", function() { this.value = formatearTelefono(this.value); });
+
+    function formatearTelefono(valor) {
+        valor = valor.replace(/\D/g, "");
+        if (valor.length > 10) valor = valor.substring(0, 10);
+        let resultado = "";
+        if (valor.length > 0) resultado = valor.substring(0, 3);
+        if (valor.length > 3) resultado += "-" + valor.substring(3, 6);
+        if (valor.length > 6) resultado += "-" + valor.substring(6, 8);
+        if (valor.length > 8) resultado += "-" + valor.substring(8, 10);
+        return resultado;
+    }
+
+    function togglePassword() {
+        const input = document.getElementById("password");
+        input.type = input.type === "password" ? "text" : "password";
+    }
+</script>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <div class="card-header text-center"><h5 class="mb-3">Datos de la asignacion</h5></div>
+        <div class="card-body">
+            <form th:object="${asignacionDTO}" th:action="@{${accion2}}" method="post">
+                <input type="hidden" th:field="*{IDAsignacion}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label">Grupo</label>
+                            <div class="col-md-8">
+                                <p id="grupoInfo"
+                                   class="form-control"
+                                   th:text="${grupo.claveGrupo}"
+                                   th:data-clave="${grupo.claveGrupo}"
+                                   th:data-dias="${grupo.diasLaboratorio}">
+                                </p>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label">Maestro</label>
+                            <div class="col-md-8"> <p class="form-control" th:text="${grupo.numeroControl.nombre}"> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label">Salon</label>
+                            <div class="col-md-8"> <p class="form-control" th:text="${grupo.salon}"> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label">Horario</label>
+                            <div class="col-md-8">
+                                <p th:text="|${grupo.horaEntrada} - ${grupo.horaSalida}|" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="fecha">Fecha</label>
+                            <div class="col-md-8">
+                                <input type="date" th:field="*{fecha}"
+                                       class="form-control" id="fecha" required>
+                                <small th:if="${#fields.hasErrors('fecha')}"
+                                       th:errors="*{fecha}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="lugares">Lugar</label>
+                            <div class="col-md-8">
+                                <select th:field="*{IDLugar}" class="form-select" id="lugares" required>
+                                    <option value="" disabled selected>Seleccione un lugar</option>
+                                    <option th:each="l : ${lugares}"
+                                            th:value="${l.IDLugar}"
+                                            th:text="${l.nombre}">
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="estado">Estado</label>
+                            <div class="col-md-8">
+                                <select th:field="*{estado}" class="form-select" id="estado" required>
+                                    <option value="" disabled selected>Seleccione un estado</option>
+                                    <option value="Programada" th:if="${asignacionDTO.IDAsignacion == 0}" selected>Programada</option>
+                                    <option value="Programada" th:if="${asignacionDTO.IDAsignacion != 0}" selected>Programada</option>
+                                    <option value="Completada" th:if="${asignacionDTO.IDAsignacion != 0}">Completada</option>
+                                    <option value="Cancelada" th:if="${asignacionDTO.IDAsignacion != 0}">Cancelada</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-center mt-4">
+                        <button th:text="${titulo}" type="submit" class="btn btn-success"></button>
+                        <a class="btn btn-danger" th:href="@{/practicas/registrar}">Regresar</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const grupoInfo = document.getElementById("grupoInfo")
+        const grupoClave = grupoInfo.dataset.clave
+        const diasLaboratorio = grupoInfo.dataset.dias
+        const fecha = document.getElementById("fecha")
+        const select = document.getElementById("lugares")
+
+        const asignacionDTO_IDLugar = [[${asignacionDTO.IDLugar}]]
+
+        const diasMap = {
+            "lunes": 1, "martes": 2, "miercoles": 3,
+            "jueves": 4, "viernes": 5, "sabado": 6
+        }
+
+        const diasPermitidos = diasLaboratorio.split(",")
+            .map(d => diasMap[d.trim()])
+            .filter(n => n !== undefined)
+
+        function validarFecha() {
+            if (!fecha.value) return false
+            const [year, month, day] = fecha.value.split("-").map(Number)
+            const diaSemana = new Date(year, month - 1, day).getDay()
+
+            if (!diasPermitidos.includes(diaSemana)) {
+                alert(`Solo puedes seleccionar fechas en ${diasLaboratorio}`)
+                fecha.value = ""
+                return false
+            }
+            return true
+        }
+
+        function cargarLugares() {
+            if (!fecha.value) return
+    const url = asignacionDTO_IDLugar && asignacionDTO_IDLugar > 0
+        ? `/practicas/asignacion/lugaresDisponibles/${grupoClave}?fecha=${fecha.value}&IDLugar=${asignacionDTO_IDLugar}`
+        : `/practicas/asignacion/lugaresDisponibles/${grupoClave}?fecha=${fecha.value}`
+    console.log("URL usada:", url)
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    select.innerHTML = '<option value="" disabled>Seleccione un lugar</option>'
+                    data.forEach(lugar => {
+                        const option = document.createElement("option")
+                        option.value = lugar.idlugar
+                        option.textContent = lugar.nombre
+                        if (lugar.idlugar === asignacionDTO_IDLugar) {
+                            option.selected = true
+                        }
+                        select.appendChild(option)
+                    })
+                })
+                .catch(err => console.error(err))
+        }
+
+        if (fecha.value) {            cargarLugares()}
+
+        fecha.addEventListener("blur", () => {
+            if (validarFecha()) {                cargarLugares()}
+        })
+    })
+</script>
+</html>

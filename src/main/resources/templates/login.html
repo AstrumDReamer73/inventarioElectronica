@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<section class="vh-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <img th:src="@{/img/logo-TecNM.png}"
+                     class="img-fluid mx-auto d-block"
+                     alt="Imagen del Tec"/>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header"><p class="fs-4 text-center mb-0">Login</p></div>
+                    <div class="card-body">
+                        <form th:action="@{/login}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">Número de control</label>
+                                <input class="form-control" type="text" name="username"
+                                       placeholder="Ingrese el número de control">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="password">Contraseña</label>
+                                <div class="input-group">
+                                    <input name="password" type="password" id="password"
+                                           class="form-control" placeholder="Ingrese su contraseña">
+                                    <button class="btn btn-outline-secondary"
+                                            type="button" onclick="togglePassword()">👁</button>
+                                </div>
+                            </div>
+                            <div th:if="${session.errorMessage}" th:text="${session.errorMessage}" class="alert alert-danger"></div>
+                            <button type="submit" class="btn btn-primary w-100">Ingresar</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer text-center"><a th:href="@{/forgotPassword}">¿Olvido la contraseña?</a></div>
+            </div>
+        </div>
+    </div>
+</section>
+<div th:if="${param.logout}" class="alert alert-success">Usuario o contraseña incorrecto</div>
+</body>
+<script>
+    function togglePassword() {
+        const input = document.getElementById("password");
+        input.type = input.type === "password" ? "text" : "password";
+    }
+</script>
+</html>

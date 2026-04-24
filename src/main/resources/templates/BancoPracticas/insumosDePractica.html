@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<h1 th:text="|Insumos de la practica ${practica.nombrePractica}|"></h1>
+<table id="insumosTable" class="table table-striped table-bordered">
+    <thead class="table-striped-columns table-dark">
+    <tr>
+        <th class="col">Numero de Serie del articulo</th>
+        <th class="col">Modelo del articulo</th>
+        <th class="col">descripcion</th>
+        <th class="col">marca</th>
+        <th class="col">fecha del ultimo Mantenimiento</th>
+        <th class="col">estado</th>
+        <th class="col">ubicacion</th>
+        <th class="col"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="insumo:${insumos}">
+        <td th:text="${insumo.articulo.numeroSerie}"></td>
+        <td th:text="${insumo.articulo.modelo.modelo}"></td>
+        <td th:text="${insumo.articulo.fechaUltimoMantenimiento}"></td>
+        <td th:text="${insumo.cantidad}"></td>
+        <td th:text="${insumo.estado}"></td>
+        <td>
+            <a th:href="@{'/listaPracticas/'+${practica.idPractica}+'/insumo/actualizar/'+{practica.IDInsumo}}"
+               class="btn btn-primary btn-sm">Actualizar insumo</a>
+            <a th:href="@{'/listaPracticas/'+${practica.idPractica}+'/insumo/eliminar/'+${practica.IDInsumo}}"
+               class="btn btn-danger btn-sm">Eliminar Insumo</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<footer th:replace="~{listas/listaEquiposMantenimiento::dataTable}"></footer>
+<script>
+    document.addEventListener("DOMContentLoaded",function(){
+        if(!$.fn.DataTable.isDataTable('#insumosTable')){
+            $('#insumosTable').DataTable({
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json"
+                }
+        });
+    });
+</script>
+</body>
+</html>

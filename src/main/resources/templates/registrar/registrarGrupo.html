@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div>
+    <h1 th:text="${titulo}" class="text-center"></h1>
+    <h3 class="text-center">Ingrese los datos</h3>
+    <form method="post" th:object="${grupoDTO}" th:action="@{${accion}}">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h5>Datos de la materia</h5></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="claveMateria">Clave de la materia</label>
+                            <div class="col-md-8">
+                                <input th:if="${titulo == 'Registrar grupo'}"
+                                       th:field="*{claveMateria}" id="claveMateria"
+                                       class="form-control" list="listaMaterias" required
+                                       placeholder="Ingrese la clave de la materia">
+                                <datalist id="listaMaterias">
+                                    <option th:each="m:${listaMaterias}"
+                                            th:value="${m.claveMateria}"
+                                            th:text="${m.nombreMateria}">
+                                    </option>
+                                </datalist>
+                                <p class="form-control" th:if="${titulo == 'Editar grupo'}" th:text="${grupoDTO.claveMateria}"></p>
+                                <input type="hidden" th:if="${titulo == 'Editar grupo'}" th:field="*{claveMateria}" th:value="${grupoDTO.claveMateria}">
+                                <small th:if="${#fields.hasErrors('claveMateria')}"
+                                       th:errors="*{claveMateria}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="nombreMateria">Nombre de la materia</label>
+                            <div class="col-md-8">
+                                <input th:field="*{nombreMateria}" id="nombreMateria"
+                                       class="form-control" required
+                                       placeholder="Ingrese el nombre de la materia">
+                                <small th:if="${#fields.hasErrors('nombreMateria')}"
+                                       th:errors="*{nombreMateria}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div th:if="${titulo=='Editar grupo'}" class="mb-3">
+                            <a th:href="@{'/grupos/editarMateria/'+${grupoDTO.claveMateria}}"></a>
+                            <a th:href="@{'/grupos/eliminarMateria/'+${grupoDTO.claveMateria}}"></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h5>Datos del grupo</h5></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="claveGrupo">Clave del grupo</label>
+                            <div class="col-md-8">
+                                <input th:if="${titulo == 'Registrar grupo'}"
+                                       th:field="*{claveGrupo}" class="form-control" required
+                                       placeholder="Ingrese la clave del grupo" type="text"
+                                       th:errorclass="'form-control alert-danger'" id="claveGrupo">
+                                <p class="form-control" th:if="${titulo == 'Editar grupo'}" th:text="${grupoDTO.claveGrupo}"></p>
+                                <input type="hidden" th:if="${titulo == 'Editar grupo'}" th:field="*{claveGrupo}" th:value="${grupoDTO.claveGrupo}">
+                                <small th:if="${#fields.hasErrors('claveGrupo')}"
+                                       class="form-text text-danger"
+                                       th:errors="*{claveGrupo}"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="maestro">Maestro</label>
+                            <div class="col-md-8">
+                                <select th:field="*{numeroControl}" id="maestro" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione un maestro</option>
+                                    <option th:each="m:${listaMaestros}"
+                                            th:value="${m.numeroControl}"
+                                            th:text="${m.nombre}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="salon">Salón</label>
+                            <div class="col-md-8">
+                                <select th:field="*{salon}" id="salon" class="form-select" required>
+                                    <option value="" disabled selected>Seleccione un salón</option>
+                                    <option value="Salon A">Salon A</option>
+                                    <option value="Salon B">Salon B</option>
+                                    <option value="Salon C">Salon C</option>
+                                    <option value="Salon D">Salon D</option>
+                                    <option value="Salon E">Salon E</option>
+                                    <option value="Laboratorio de computo">Laboratorio de computo</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h5>Fechas</h5></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="horaEntrada">Hora de entrada</label>
+                            <div class="col-md-8">
+                                <input th:field="*{horaEntrada}" class="form-control"
+                                       id="horaEntrada" type="time" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="horaSalida">Hora de salida</label>
+                            <div class="col-md-8">
+                                <input type="time" th:field="*{horaSalida}"
+                                       class="form-control" id="horaSalida" required>
+                            </div>
+                        </div>
+                        <div class="shadow-sm">
+                            <label class="form-label">Días de laboratorio</label>
+                            <div class="row">
+                                <div class="col-4">
+                                    <input type="checkbox" th:field="*{dias}" name="dias" th:value="'lunes'">Lunes
+                                </div>
+                                <div class="col-4">
+                                    <input type="checkbox" th:field="*{dias}" name="dias" th:value="'martes'">Martes
+                                </div>
+                                <div class="col-4">
+                                    <input type="checkbox" th:field="*{dias}" name="dias" th:value="'miercoles'">Miercoles
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-4">
+                                    <input type="checkbox" th:field="*{dias}" name="dias" th:value="'jueves'">Jueves
+                                </div>
+                                <div class="col-4">
+                                    <input type="checkbox" th:field="*{dias}" name="dias" th:value="'viernes'">Viernes
+                                </div>
+                                <div class="col-4">
+                                    <input type="checkbox" th:field="*{dias}" name="dias" th:value="'sabado'">Sabado
+                                </div>
+                            </div>
+                            <small th:if="${#fields.hasErrors('dias')}"
+                                   th:errors="*{dias}"
+                                   class="form-text text-danger"></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-center mt-3">
+            <button th:text="${titulo}" type="submit" class="btn btn-success"></button>
+            <button th:href="@{grupos/listaGrupos/Salon A}"
+                    onclick="return confirm('¿Esta seguro que desea cancelar?, los datos no se guardaran')"
+                    class="btn btn-danger">Cancelar registro</button>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const claveInput = document.getElementById("claveMateria");
+        const nombreInput = document.getElementById("nombreMateria");
+
+        claveInput.addEventListener("change", function () {
+            const clave = claveInput.value;
+            if (!clave) return;
+            fetch(`/grupos/obtenerMateria/${clave}`)
+            .then(response => {
+                if (!response.ok) {throw new Error("Materia no encontrada");}
+                return response.json();
+            })
+            .then(data => {nombreInput.value = data.nombreMateria;})
+            .catch(error => {
+                console.error("Error:", error);
+                nombreInput.value = "";
+            });
+        });
+
+        document.querySelectorAll("input[type='time']").forEach(input => {
+            input.addEventListener("blur", () => {
+                const [h, m] = input.value.split(":").map(Number)
+                if (m !== 0) {input.value = `${h.toString().padStart(2, '0')}:00`}
+            })
+        })
+    });
+</script>
+</html>
