@@ -6,6 +6,7 @@ import com.example.inventarioElectronica.Model.mantenimientoArticulo
 import com.example.inventarioElectronica.Repository.articuloParticularRepository
 import com.example.inventarioElectronica.Repository.mantenimientoArticuloRepository
 import com.example.inventarioElectronica.Repository.expedienteArticuloRepository
+import com.example.inventarioElectronica.Repository.modeloGeneralRepository
 import com.example.inventarioElectronica.Repository.usuarioRepository
 import com.example.inventarioElectronica.Views.equiposMantenimientoView
 import jakarta.transaction.Transactional
@@ -17,7 +18,8 @@ import java.time.LocalDate
     private val equipoMantenimientoRepository: mantenimientoArticuloRepository,
     private val articuloParticularRepository: articuloParticularRepository,
     private val expedienteMantenimientoRepository: expedienteArticuloRepository,
-    private val usuariosRepository: usuarioRepository
+    private val usuariosRepository: usuarioRepository,
+    private val modeloGeneralRepository: modeloGeneralRepository
 ) {
     fun saveEquipoMantenimiento(equipoMantenimiento: equipoMantenimientoDTO) {
         val articulo = articuloParticularRepository.findById(equipoMantenimiento.numeroSerie)
@@ -64,22 +66,24 @@ import java.time.LocalDate
         val usuario = usuariosRepository.findById(dto.numeroControl)
             .orElseThrow { IllegalArgumentException("El usuario no existe") }
 
-       /* require(equipoMantenimiento.fechaEntrada >= Date.valueOf(LocalDate.now()))
-        { "la fecha de salida no puede ser anterior a hoy" }
-        require(equipoMantenimiento.fechaEntrada < equipoMantenimiento.fechaSalida)
-        { "La fecha de entrada no puede ser después de la fecha salida" }
-        require(equipoMantenimiento.fechaProximoMantenimiento > equipoMantenimiento.fechaEntrada)
-        { "La fecha del próximo mantenimiento no puede ser antes de la fecha de entrada" }
-        require(equipoMantenimiento.fechaProximoMantenimiento > equipoMantenimiento.fechaSalida)
-        { "La fecha del próximo mantenimiento no puede ser antes de la salida" }
-        require(equipoMantenimiento.fechaProximoMantenimiento > articulo.fechaUltimoMantenimiento)
-        { "La fecha del próximo mantenimiento no puede ser antes del último mantenimiento" } */
+        if (dto.fechaEntrada != articuloEnMantenimiento.fechaEntrada ||
+            dto.fechaSalida != articuloEnMantenimiento.fechaSalida ||
+            dto.fechaProximoMantenimiento != articuloEnMantenimiento.fechaProximoMantenimiento) {
+            require(dto.fechaEntrada < dto.fechaSalida)
+            { "La fecha de entrada no puede ser después de la fecha de salida" }
+            require(dto.fechaProximoMantenimiento > dto.fechaEntrada)
+            { "La fecha del próximo mantenimiento no puede ser antes de la fecha de entrada" }
+            require(dto.fechaProximoMantenimiento > dto.fechaSalida)
+            { "La fecha del próximo mantenimiento no puede ser antes de la salida" }
+            require(dto.fechaProximoMantenimiento > articulo.fechaUltimoMantenimiento)
+            { "La fecha del próximo mantenimiento no puede ser antes del último mantenimiento" }
+        }
 
         when(dto.estado){
             "Finalizado" -> {
                 require(LocalDate.now() >= equipoMantenimiento.fechaSalida.toLocalDate())
                 { "Para poder marcar un articulo como finalizado, la fecha de hoy debe ser despues de la fecha de salida" }
-                articulo.estado = "disponible"
+                articulo.estado = "Disponible"
                 val expediente = expedienteArticulo(
                     numeroSerie = articulo,
                     numeroControl = usuario,
@@ -92,24 +96,28 @@ import java.time.LocalDate
                     articuloEnMantenimiento.apply {
                         equipo = articulo
                         personalEncargado = usuario
-                        motivo = dto.motivo.trim()
-                        estado = dto.estado.trim()
+                        motivo = dto.motivo
+                        estado = dto.estadoArticulo
                         fechaEntrada = dto.fechaEntrada
                         fechaSalida = dto.fechaSalida
                         fechaProximoMantenimiento = dto.fechaProximoMantenimiento
                     }
                     equipoMantenimientoRepository.save(articuloEnMantenimiento)
+                    equipoMantenimientoRepository.delete(equipoMantenimiento)
                 }else{
+                    val articulosConEseModelo = articuloParticularRepository.countByModelo_Modelo(articulo.modelo!!.modelo)
                     val expedientes = expedienteMantenimientoRepository.findByNumeroSerie_NumeroSerie(articulo.numeroSerie)
                     articuloParticularRepository.delete(articulo)
                     expedienteMantenimientoRepository.deleteAll(expedientes)
+                    equipoMantenimientoRepository.delete(equipoMantenimiento)
+                    if(articulosConEseModelo <= 1){ modeloGeneralRepository.deleteById(articulo.modelo!!.modelo) }
                 }
             }
             "Cancelado" -> {
-                articulo.estado= "disponible"
+                articulo.estado= "Disponible"
                 articuloParticularRepository.save(articulo)
+                equipoMantenimientoRepository.delete(equipoMantenimiento)
             }
         }
-        equipoMantenimientoRepository.delete(equipoMantenimiento)
     }
 }

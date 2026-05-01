@@ -1,6 +1,6 @@
 create table articulos_particular(
-    numero_serie varchar(30) primary key,
-    modelo varchar(30) foreign key references modelos_general(modelo),
+    numero_serie varchar(50) primary key,
+    modelo varchar(50) foreign key references modelos_general(modelo),
     ubicacion varchar(30),
     estado varchar(30),
     plazo_Garantia varchar(30),
@@ -31,16 +31,16 @@ create table avance_curricular(
 
 create table expediente_articulo(
 	IDExpediente int identity primary key,
-	numero_serie varchar(50) foreign key references articulos_particular,
-	numero_control varchar(10) foreign key references usuarios(numero_control),
+	numero_serie varchar(50) foreign key references articulos_particular(numero_serie),
+	numero_control varchar(15) foreign key references usuarios(numero_control),
 	fecha_entrada date,
 	fecha_salida date,
 )
 
 create table expediente_mesa(
     IDExpediente int identity primary key,
-    IDLugar int foreign key lugar(IDLugar),
-    numero_control varchar(10) foreign key references usuarios(numero_control),
+    IDLugar int foreign key references lugar(IDLugar),
+    numero_control varchar(15) foreign key references usuarios(numero_control),
     fecha_entrada date,
     fecha_salida date,
     fecha_proximo_mantenimiento date
@@ -77,8 +77,8 @@ create table lugar(
 
 create table mantenimiento_articulo(
     IDMantenimiento int identity primary key,
-    numero_serie int foreign key references articulos_particular(numero_serie),
-    numero_control int foreign key references usuarios(numero_control),
+    numero_serie varchar(50) foreign key references articulos_particular(numero_serie),
+    numero_control varchar(15) foreign key references usuarios(numero_control),
     motivo varchar(100),
     estado varchar(50),
     fecha_Entrada date,
@@ -89,7 +89,7 @@ create table mantenimiento_articulo(
 create table mantenimiento_mesa(
     IDMantenimiento int identity,
     IDLugar int foreign key references lugar(IDLugar),
-    numero_control varchar(10) foreign key references usuarios(numero_control)
+    numero_control varchar(15) foreign key references usuarios(numero_control),
     fecha_Entrada date,
     fecha_Salida date,
     fecha_Proximo_mantenimiento date,
@@ -217,7 +217,7 @@ BEGIN
         em.estado
     FROM mantenimiento_articulo em
     INNER JOIN articulos_particular ap
-        ON em.articulo = ap.numero_serie
+        ON em.numero_serie = ap.numero_serie
     INNER JOIN modelos_general mg
         ON ap.modelo = mg.modelo
     INNER JOIN usuarios u

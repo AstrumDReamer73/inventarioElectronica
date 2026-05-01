@@ -42,10 +42,10 @@
             <td sec:authorize="!hasAnyAuthority('Docencia','Maestro')">
                 <div class="content-center text-center">
                     <a class="btn btn-primary btn-sm d-flex justify-content-center align-items-center flex-fill mb-1"
-                       th:href="@{'/usuarios/editar/'+${usuario.numeroControl}}">editar</a>
+                       th:href="@{'/usuarios/editar/'+${usuario.numeroControl}}">Editar</a>
                     <a class="btn btn-danger btn-sm d-flex justify-content-center align-items-center flex-fill mb-1"
                        th:href="@{'/usuarios/eliminar/'+${usuario.numeroControl}}"
-                       onclick="return confirm('¿Estás seguro?')">eliminar</a>
+                       onclick="return confirm('¿Estás seguro?')">Eliminar</a>
                 </div>
             </td>
         </tr>
