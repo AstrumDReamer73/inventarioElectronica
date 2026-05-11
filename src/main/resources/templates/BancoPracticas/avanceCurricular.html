@@ -109,9 +109,7 @@
 </div>
 <footer th:replace="~{listas/dataTable::dataTable('practicasTable')}"></footer>
 <script>
-    $.fn.dataTable.ext.errMode = function (settings, helpPage, message) {
-        console.warn("DataTables error:", message);
-    };
+    $.fn.dataTable.ext.errMode = function (settings, helpPage, message) { console.warn("DataTables error:", message); };
 </script>
 </body>
 </html>

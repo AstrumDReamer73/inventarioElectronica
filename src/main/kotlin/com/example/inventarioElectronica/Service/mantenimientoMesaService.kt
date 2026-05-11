@@ -49,6 +49,7 @@ import java.time.LocalDate
     }
 
     fun habilitar(dto: lugarDTO){
+        println(dto)
         val lugar = lugarRepository.findById(dto.idlugar)
             .orElseThrow { IllegalArgumentException("La mesa de trabajo no esta disponible") }
         val mantenimientoMesa = mantenimientoMesaRepository.findByIDLugar_IDLugar(dto.idlugar)
@@ -60,9 +61,10 @@ import java.time.LocalDate
 
         lugar.apply {
             estado ="Disponible"
-            fechaUltimoMantenimiento = dto.fechaUltimoMantenimiento
-            fechaProximoMantenimiento = fechaProximoMantenimiento
+            fechaUltimoMantenimiento = dto.fechaSalida
+            fechaProximoMantenimiento = dto.fechaProximoMantenimiento
         }
+        println("Guardando lugar: fechaUltimo=${lugar.fechaUltimoMantenimiento}, fechaProximo=${lugar.fechaProximoMantenimiento}")
         mantenimientoMesaRepository.delete(mantenimientoMesa)
         lugarRepository.save(lugar)
         expedienteMesaRepository.save(

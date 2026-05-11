@@ -2,6 +2,7 @@ package com.example.inventarioElectronica.Service
 
 import com.example.inventarioElectronica.DTO.asignacionDTO
 import com.example.inventarioElectronica.Model.asignacionPractica
+import com.example.inventarioElectronica.Model.lugar
 import com.example.inventarioElectronica.Model.mantenimientoArticulo
 import com.example.inventarioElectronica.Repository.articuloParticularRepository
 import com.example.inventarioElectronica.Repository.asignacionRepository
@@ -53,16 +54,22 @@ import java.time.LocalDate
 
     fun findByLugar(IDLugar:Int) = asignacionRepository.findByIDLugar_IDLugar(IDLugar)
 
-    fun findLugaresDisponibles(fecha: Date, horaEntrada:Time, horaSalida: Time, IDLugar: Int?) = lugarRepository.checkDisponibilidad(fecha, horaEntrada, horaSalida, IDLugar)
+    fun findLugaresDisponibles(fecha: Date, horaEntrada:Time, horaSalida: Time, IDLugar: Int?): List<lugar>  {
+        println("Fecha: $fecha, Hora Entrada: $horaEntrada, Hora Salida: $horaSalida, IDLugar: $IDLugar")
+        return lugarRepository.checkDisponibilidad(fecha, horaEntrada, horaSalida, IDLugar)
+    }
 
     fun updateAsignacion(id: Int, dto: asignacionDTO) {
+        println(dto)
         val asignacion = findById(id)
         val insumos = insumosRepository.findByIDAsignacion_IDAsignacion(asignacion.IDAsignacion)
+        println(insumos)
+        println(asignacion)
         when(dto.estado){
             "Programada" -> {
                 asignacion.fecha = dto.fecha
                 asignacion.estado = dto.estado
-                asignacion.lugar = lugarRepository.findById(dto.IDLugar!!).orElseThrow { IllegalArgumentException("Wl lugar no existe") }
+                asignacion.lugar = lugarRepository.findById(dto.IDLugar!!).orElseThrow { IllegalArgumentException("El lugar no existe") }
                 asignacionRepository.save(asignacion)
             }
 
@@ -80,7 +87,7 @@ import java.time.LocalDate
                 asignacionRepository.delete(asignacion)
             }
 
-            "Finalizada" -> {
+            "Completada" -> {
                 insumos.forEach {
                     val articulo = it.articulo!!
                     articulo.estado="Mantenimiento NA"

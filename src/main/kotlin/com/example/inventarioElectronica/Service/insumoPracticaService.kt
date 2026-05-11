@@ -33,8 +33,6 @@ import java.time.LocalDate
         insumosRepository.saveAll(nuevos)
     }
 
-    fun findInsumo(search: String) = insumosRepository.findInsumo(search)
-
     fun findByAsignacion(IDAsignacion:Int):List<insumosView> {
         val insumos = insumosRepository.findByIDAsignacion_IDAsignacion(IDAsignacion)
         return insumos.map {
@@ -54,5 +52,5 @@ import java.time.LocalDate
     fun findAll() = insumosRepository.findAll()
 
     fun findAllArticulosElegibles(fechaUso: LocalDate, insumosAgregados:List<String> = emptyList()) =
-        insumosRepository.findArticulosElegibles(Date.valueOf(fechaUso.minusWeeks(2)), Date.valueOf(fechaUso.plusWeeks(2))).filter{ it.articulo!!.numeroSerie !in insumosAgregados}
+        insumosRepository.findArticulosElegibles(Date.valueOf(fechaUso.minusWeeks(2)), Date.valueOf(fechaUso.plusWeeks(2))).filter{ it.numeroSerie !in insumosAgregados}
 }

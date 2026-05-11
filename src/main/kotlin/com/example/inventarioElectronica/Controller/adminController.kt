@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import java.io.File
+import java.time.LocalDate
 
 @RequestMapping("/admin")
 @Controller class adminController(private val backupService: backupService) {
     @GetMapping("/backup")
     fun backup(response: HttpServletResponse) {
         val nombreBD = "ProyectoResidencias"
-        val ruta = "C:\\Backups\\ProyectoResidencias_${System.currentTimeMillis()}.bak"
+        val ruta = "C:\\Backups\\ProyectoResidencias_${LocalDate.now()}.bak"
         val file = File(ruta)
         backupService.backupDatabase(nombreBD, ruta)
 
@@ -33,7 +34,7 @@ import java.io.File
 
     @PostMapping("/restore/upload")
     fun restoreFromFile(@RequestParam file: MultipartFile, flash: RedirectAttributes): String {
-        val ruta = "C:\\Backups\\ProyectoResidencias_${System.currentTimeMillis()}.bak"
+        val ruta = "C:\\Backups\\ProyectoResidencias_${LocalDate.now()}.bak"
         val limpio = File(ruta)
         file.inputStream.use{
                 input -> limpio.outputStream().use{

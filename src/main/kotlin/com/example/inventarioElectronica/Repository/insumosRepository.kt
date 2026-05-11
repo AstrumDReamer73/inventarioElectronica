@@ -1,5 +1,6 @@
 package com.example.inventarioElectronica.Repository
 
+import com.example.inventarioElectronica.Model.articuloParticular
 import com.example.inventarioElectronica.Model.insumoPractica
 import com.example.inventarioElectronica.Views.insumosView
 import org.springframework.data.jpa.repository.EntityGraph
@@ -19,8 +20,5 @@ import java.util.Optional
 
     @Query(value ="exec SP_ListarInsumos ?,?", nativeQuery = true)
     fun findArticulosElegibles(@Param("fechaInicio") fechaInicio: Date,
-                               @Param("fechaTermino") fechaTermino: Date): List<insumoPractica>
-
-    @Query(value="exec sp_BuscarInsumo ?", nativeQuery = true)
-    fun findInsumo(descripcion: String?): Optional<insumosView>
+                               @Param("fechaTermino") fechaTermino: Date): List<insumosView>
 }

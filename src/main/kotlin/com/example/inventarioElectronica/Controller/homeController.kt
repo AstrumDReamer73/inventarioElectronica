@@ -61,11 +61,13 @@ import java.util.UUID
                           @RequestParam password: String,
                           model: Model): String{
         val user = usuarioService.findByResetToken(token)
-        if(user == null){ model.addAttribute("errorMsg","el link es invalido o expirado") }
-        else{
+        return if(user == null){
+            model.addAttribute("errorMsg","el link es invalido o expirado")
+            "redirect:/forgotPassword"
+        } else{
             usuarioService.updatePassword(token, password)
             model.addAttribute("errorMsg","contraseña actualizada con exito")
+            "redirect:/"
         }
-        return "/login"
     }
 }

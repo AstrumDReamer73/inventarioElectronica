@@ -9,7 +9,7 @@
         <div class="card-body">
             <form th:object="${asignacionDTO}" th:action="@{${accion2}}" method="post">
                 <input type="hidden" th:field="*{IDAsignacion}">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <!--<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/> -->
                 <div class="row g-4">
                     <div class="col-md-6">
                         <div class="row mb-3 align-items-center">
@@ -86,64 +86,68 @@
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        const grupoInfo = document.getElementById("grupoInfo")
-        const grupoClave = grupoInfo.dataset.clave
-        const diasLaboratorio = grupoInfo.dataset.dias
-        const fecha = document.getElementById("fecha")
-        const select = document.getElementById("lugares")
+    const grupoInfo = document.getElementById("grupoInfo")
+    const grupoClave = grupoInfo.dataset.clave
+    const diasLaboratorio = grupoInfo.dataset.dias
+    const fecha = document.getElementById("fecha")
+    const select = document.getElementById("lugares")
+    const asignacionDTO_IDLugar = [[${asignacionDTO.IDLugar != null && asignacionDTO.IDLugar != 0 ? asignacionDTO.IDLugar : 'null'}]]
 
-        const asignacionDTO_IDLugar = [[${asignacionDTO.IDLugar}]]
+    const diasMap = {
+        "lunes": 1, "martes": 2, "miercoles": 3,
+        "jueves": 4, "viernes": 5, "sabado": 6
+    }
 
-        const diasMap = {
-            "lunes": 1, "martes": 2, "miercoles": 3,
-            "jueves": 4, "viernes": 5, "sabado": 6
+    const diasPermitidos = diasLaboratorio.split(",")
+        .map(d => diasMap[d.trim()])
+        .filter(n => n !== undefined)
+
+    function validarFecha() {
+        console.log("Validando fecha:", fecha.value)
+
+        if (!fecha.value) return false
+
+        const [year, month, day] = fecha.value.split("-").map(Number)
+        const diaSemana = new Date(year, month - 1, day).getDay()
+        if (!diasPermitidos.includes(diaSemana)) {
+            alert(`Solo puedes seleccionar fechas en: ${diasLaboratorio}`)
+            fecha.value = ""
+            return false
         }
+        return true
+    }
 
-        const diasPermitidos = diasLaboratorio.split(",")
-            .map(d => diasMap[d.trim()])
-            .filter(n => n !== undefined)
+    function cargarLugares() {
+        console.log("Cargando lugares para fecha:", fecha.value)
 
-        function validarFecha() {
-            if (!fecha.value) return false
-            const [year, month, day] = fecha.value.split("-").map(Number)
-            const diaSemana = new Date(year, month - 1, day).getDay()
+        const url = asignacionDTO_IDLugar && asignacionDTO_IDLugar > 0
+            ? `/practicas/asignacion/lugaresDisponibles/${grupoClave}?fecha=${fecha.value}&IDLugar=${asignacionDTO_IDLugar}`
+            : `/practicas/asignacion/lugaresDisponibles/${grupoClave}?fecha=${fecha.value}`
 
-            if (!diasPermitidos.includes(diaSemana)) {
-                alert(`Solo puedes seleccionar fechas en ${diasLaboratorio}`)
-                fecha.value = ""
-                return false
-            }
-            return true
-        }
+        console.log("URL usada:", url)
 
-        function cargarLugares() {
-            if (!fecha.value) return
-    const url = asignacionDTO_IDLugar && asignacionDTO_IDLugar > 0
-        ? `/practicas/asignacion/lugaresDisponibles/${grupoClave}?fecha=${fecha.value}&IDLugar=${asignacionDTO_IDLugar}`
-        : `/practicas/asignacion/lugaresDisponibles/${grupoClave}?fecha=${fecha.value}`
-    console.log("URL usada:", url)
-            fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                    select.innerHTML = '<option value="" disabled>Seleccione un lugar</option>'
-                    data.forEach(lugar => {
-                        const option = document.createElement("option")
-                        option.value = lugar.idlugar
-                        option.textContent = lugar.nombre
-                        if (lugar.idlugar === asignacionDTO_IDLugar) {
-                            option.selected = true
-                        }
-                        select.appendChild(option)
-                    })
+        fetch(url)
+            .then(res => { return res.json() })
+            .then(data => {
+                console.log("Lugares recibidos:", data)
+                select.innerHTML = '<option value="" disabled>Seleccione un lugar</option>'
+                data.forEach(lugar => {
+                    const option = document.createElement("option")
+                    option.value = lugar.IDLugar
+                    option.textContent = lugar.nombre
+                    if (lugar.idlugar === asignacionDTO_IDLugar) { option.selected = true }
+                    select.appendChild(option)
                 })
-                .catch(err => console.error(err))
-        }
+            })
+            .catch(err => console.error("Error en fetch:", err))
+    }
 
-        if (fecha.value) {            cargarLugares()}
+    if (fecha.value) { cargarLugares() }
 
-        fecha.addEventListener("blur", () => {
-            if (validarFecha()) {                cargarLugares()}
-        })
+    fecha.addEventListener("change", () => {
+        const valido = validarFecha()
+        if (valido) { cargarLugares() }
     })
+})
 </script>
 </html>

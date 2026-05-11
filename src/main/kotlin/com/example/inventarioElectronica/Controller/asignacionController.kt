@@ -67,7 +67,7 @@ import java.sql.Date
         else "Editar asignacion"
 
         model.addAttribute("asignacionDTO", wizard.asignacion)
-        model.addAttribute("lugares", lugares)
+        model.addAttribute("lugares", emptyList<Any>())
         model.addAttribute("grupo", grupo)
         model.addAttribute("accion2", ruta)
         model.addAttribute("titulo", titulo)
@@ -78,11 +78,25 @@ import java.sql.Date
     fun Asignar(@ModelAttribute("practicaWizard") wizard: practicaWizard,
                 @PathVariable IDPractica: Int,
                 @RequestParam claveGrupo: String,
-                @Valid @ModelAttribute asignacionDTO: asignacionDTO,
+                @ModelAttribute @Valid asignacionDTO: asignacionDTO,
                 result: BindingResult,
                 flash: RedirectAttributes): String {
-        if (result.hasErrors()) { return "redirect:/practicas/asignacion/asignar/${IDPractica}?claveGrupo=${claveGrupo}" }
+
+        println("=== POST ASIGNAR ===")
+        println("hasErrors: ${result.hasErrors()}")
+        println("Errores: ${result.allErrors}")
+        println("asignacionDTO recibido: $asignacionDTO")
+
+        if (result.hasErrors()) {
+            println("Redirigiendo por errores...")
+            return "redirect:/practicas/asignacion/asignar/${IDPractica}?claveGrupo=${claveGrupo}"
+        }
+
+        println("Guardando en wizard...")
         wizard.asignacion = asignacionDTO
+        println("Wizard asignacion: ${wizard.asignacion}")
+        println("Redirigiendo a asignarInsumos...")
+
         flash.addFlashAttribute("success", "Asignación registrada correctamente")
         return "redirect:/practicas/asignarInsumos"
     }
@@ -94,6 +108,10 @@ import java.sql.Date
                @Valid @ModelAttribute asignacionDTO: asignacionDTO,
                result: BindingResult,
                flash: RedirectAttributes): String {
+        println("=== POST Editar ===")
+        println("hasErrors: ${result.hasErrors()}")
+        println("Errores: ${result.allErrors}")
+        println("asignacionDTO recibido: $asignacionDTO")
         if (result.hasErrors()) { return "redirect:/practicas/asignacion/asignar/${IDPractica}?claveGrupo=${claveGrupo}" }
         wizard.asignacion = asignacionDTO
         asignacionService.updateAsignacion(wizard.asignacion.IDAsignacion, wizard.asignacion)
