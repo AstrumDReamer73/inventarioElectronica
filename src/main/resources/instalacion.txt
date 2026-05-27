@@ -26,7 +26,10 @@ create table usuarios(
     telefono varchar(15),
     password_hash varchar(255),
     rol varchar(30),
-    reset_token varchar(255)
+    attempts int,
+    reset_token varchar(255),
+    token_issued_at datetime,
+    lock_time datetime
 )
 go
 
@@ -320,8 +323,21 @@ BEGIN
 END;
 go
 
-insert into usuarios values ('$NumeroControl','$NombreCompleto','$Correo','$Telefono','password','Jefe',null)
-insert into usuarios values ('20070001','Personal','l20070001@cdmadero.tecnm.mx','8331234567','Personal','Personal',null)
+create table usuarios(
+    numero_Control varchar(15) primary key,
+    nombre varchar(100),
+    correo varchar(50),
+    telefono varchar(15),
+    password_hash varchar(255),
+    rol varchar(30),
+    attempts int,
+    reset_token varchar(255),
+    token_issued_at datetime,
+    lock_time datetime
+)
+
+insert into usuarios values ('$NumeroControl','$NombreCompleto','$Correo','$Telefono','password','Jefe',0,'','','')
+insert into usuarios values ('20070001','Personal','l20070001@cdmadero.tecnm.mx','8331234567','Personal','Personal',0,'','','')
 insert into lugar values ('Salon','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
 insert into lugar values ('Mesa 1','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
 insert into lugar values ('Mesa 2','Disponible',GETDATE(),GETDATE(),GETDATE(),'')

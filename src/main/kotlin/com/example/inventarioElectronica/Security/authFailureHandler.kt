@@ -1,11 +1,13 @@
 package com.example.inventarioElectronica.Security
 
+import com.example.inventarioElectronica.Model.usuario
 import com.example.inventarioElectronica.Service.usuarioService
 import io.jsonwebtoken.io.IOException
 import jakarta.servlet.ServletException
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler
 import org.springframework.stereotype.Component
@@ -20,11 +22,15 @@ import org.springframework.stereotype.Component
         val numeroControl = request.getParameter("username") ?: ""
         val user = runCatching { userService.loadUserByUsername(numeroControl) }.getOrNull()
         val mensaje = when {
-            user == null -> "Usuario no encontrado"
-            exception is BadCredentialsException -> "Numero de control o contraseña incorrecta"
+            exception is LockedException -> "Cuenta bloqueada por múltiples intentos fallidos. Por favor, inténtelo de nuevo más tarde."
+            exception is BadCredentialsException -> {
+                user?.let { userService.increaseAttempts(it as usuario) }
+                "Credenciales incorrectas"
+            }
+            user == null -> "Credenciales incorrectas"
             else -> "Error de autenticacion"
         }
-        request?.session?.setAttribute("errorMessage", mensaje)
+        request.session.setAttribute("errorMessage", mensaje)
         super.setDefaultFailureUrl("/?error")
         super.onAuthenticationFailure(request, response, exception)
     }

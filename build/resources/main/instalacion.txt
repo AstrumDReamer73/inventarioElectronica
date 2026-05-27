@@ -1,0 +1,351 @@
+================================================
+INSTALACION DE LA BASE DE DATOS
+==================================================
+
+create database ProyectoResidencias
+go
+
+use ProyectoResidencias
+go
+
+create table lugar(
+    IDLugar int identity primary key,
+    nombre varchar(50),
+    estado varchar(50),
+    fecha_proximo_mantenimiento date,
+    fecha_ultimo_mantenimiento date,
+    fecha_salida_mantenimiento date,
+    nombre_personal varchar(50)
+)
+go
+
+create table usuarios(
+    numero_Control varchar(15) primary key,
+    nombre varchar(100),
+    correo varchar(50),
+    telefono varchar(15),
+    password_hash varchar(255),
+    rol varchar(30),
+    attempts int,
+    reset_token varchar(255),
+    token_issued_at datetime,
+    lock_time datetime
+)
+go
+
+
+create table materias(
+    clave_materia varchar(4) primary key,
+    nombre_materia varchar(100)
+)
+go
+
+create table practicas(
+    idpracticas int primary key identity,
+    clave_materia varchar(4) foreign key references materias(clave_materia),
+    nombre varchar(100),
+    archivo varchar(max),
+)
+go
+
+create table modelos_general(
+    modelo varchar(50) primary key,
+    descripcion varchar(MAX),
+    marca varchar(30),
+    categoria varchar(30)
+)
+go
+
+create table articulos_particular(
+    numero_serie varchar(50) primary key,
+    modelo varchar(50) foreign key references modelos_general(modelo),
+    ubicacion varchar(30),
+    estado varchar(30),
+    plazo_Garantia varchar(30),
+    fecha_Ingreso Date,
+    fecha_Ultimo_Mantenimiento Date,
+    fecha_Proximo_Mantenimiento Date,
+    constraint CK_articulo_fechas check (fecha_Ingreso <= fecha_Ultimo_Mantenimiento AND fecha_Ultimo_Mantenimiento < fecha_Proximo_Mantenimiento)
+)
+go
+
+create table mantenimiento_articulo(
+    IDMantenimiento int identity primary key,
+    numero_serie varchar(50) foreign key references articulos_particular(numero_serie),
+    numero_control varchar(15) foreign key references usuarios(numero_control),
+    motivo varchar(100),
+    estado varchar(50),
+    fecha_Entrada date,
+    fecha_Salida date,
+    fecha_Proximo_Mantenimiento date
+)
+go
+
+create table expediente_articulo(
+	IDExpediente int identity primary key,
+	numero_serie varchar(50) foreign key references articulos_particular(numero_serie),
+	numero_control varchar(15) foreign key references usuarios(numero_control),
+	fecha_entrada date,
+	fecha_salida date,
+)
+go
+
+create table grupos(
+    clave_grupo varchar(4) primary key,
+    clave_materia varchar(4) foreign key references materias(clave_Materia),
+    numero_control varchar(15) foreign key references usuarios(numero_Control),
+    salon varchar(50),
+    hora_entrada time,
+    hora_salida time,
+    dias_laboratorio varchar(100),
+    constraint CK_grupos_horario_valido check (hora_entrada <= hora_salida),
+    constraint UQ_grupos_salon_horario unique (salon, hora_entrada, hora_salida, dias_laboratorio)
+)
+go
+
+create table asignacion_practica(
+    idasignacion int primary key identity,
+    idpractica int foreign key references practicas(idpracticas),
+    clave_grupo varchar(4) foreign key references grupos(clave_grupo),
+    fecha date,
+    estado varchar(30),
+    idlugar int foreign key references lugar(idlugar),
+    constraint UQ_asignacion unique(idpractica,clave_grupo)
+)
+go
+
+create table avance_curricular(
+    IDAvance int primary key identity,
+    IDPractica int foreign key references practicas(IDPracticas),
+    clave_grupo varchar(4) foreign key references grupos(clave_grupo),
+    fecha date,
+    estado varchar(30),
+)
+go
+
+create table expediente_mesa(
+    IDExpediente int identity primary key,
+    IDLugar int foreign key references lugar(IDLugar),
+    numero_control varchar(15) foreign key references usuarios(numero_control),
+    fecha_entrada date,
+    fecha_salida date,
+    fecha_proximo_mantenimiento date
+)
+go
+
+create table insumos_practicas(
+    IDInsumos int primary key identity,
+    numero_serie varchar(50) foreign key references articulos_particular(numero_serie),
+    IDAsignacion int foreign key references asignacion_practica(idasignacion),
+    estado varchar(30),
+)
+go
+
+
+create table mantenimiento_mesa(
+    IDMantenimiento int identity primary key,
+    IDLugar int foreign key references lugar(IDLugar),
+    numero_control varchar(15) foreign key references usuarios(numero_control),
+    fecha_Entrada date,
+    fecha_Salida date,
+    fecha_Proximo_mantenimiento date,
+)
+go
+
+create procedure SP_CheckDisponibilidad
+    @fecha date,
+    @HoraEntrada time,
+    @HoraSalida time,
+    @IDLugar int = null
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT
+        l.idlugar,
+        l.nombre,
+        l.estado,
+        l.fecha_ultimo_mantenimiento,
+        l.fecha_proximo_mantenimiento,
+        l.fecha_salida_mantenimiento,
+        l.nombre_personal
+    FROM lugar l
+    WHERE l.estado = 'Disponible'
+      and (l.fecha_proximo_mantenimiento >= DATEADD(DAY, 7,@fecha))
+      AND (l.nombre LIKE '%Salon%'
+          OR NOT EXISTS (
+              SELECT 1
+              FROM asignacion_practica ap
+              INNER JOIN grupos g ON ap.clave_grupo = g.clave_grupo
+              WHERE ap.idlugar = l.idlugar
+                AND ap.fecha = @fecha
+                AND @HoraEntrada < g.hora_salida
+                AND @HoraSalida > g.hora_entrada
+          )
+      )
+      or l.IDLugar = @IDLugar
+END
+go
+
+create procedure SP_InsertarGrupo
+    @salon NVARCHAR(50),
+    @horaEntrada TIME,
+    @horaSalida TIME,
+    @DiasLaboratorio VARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT CASE WHEN EXISTS (
+        SELECT 1
+        FROM grupos g
+        CROSS APPLY STRING_SPLIT(g.dias_laboratorio, ',') gd
+        CROSS APPLY STRING_SPLIT(@DiasLaboratorio, ',') nd
+        WHERE g.salon = @salon
+            AND gd.value = nd.value
+            AND (g.hora_entrada < @horaSalida AND g.hora_salida > @horaEntrada))
+        THEN 1 ELSE 0
+    END AS Existe;
+END;
+go
+
+create procedure SP_ListarArticulos
+as select m.modelo as modelo,
+          m.descripcion as descripcion,
+          m.categoria as categoria,
+          m.marca as marca,
+          a.numero_serie as numeroSerie,
+          a.estado as estado,
+          a.plazo_Garantia as plazoGarantia,
+          a.ubicacion as ubicacion,
+          a.fecha_Ingreso as fechaIngreso,
+          a.fecha_Ultimo_Mantenimiento as fechaUltimoMantenimiento,
+          a.fecha_Proximo_Mantenimiento as fechaProximoMantenimiento
+    from articulos_particular a
+    inner join modelos_general m
+        on a.modelo=m.modelo
+go
+
+create procedure SP_ListarEquiposMantenimiento
+AS SELECT em.IDMantenimiento,
+          ap.numero_serie,
+          mg.modelo,
+          mg.descripcion,
+          mg.marca,
+          em.motivo,
+          u.nombre,
+          u.numero_control,
+          em.fecha_Entrada,
+          em.fecha_Salida,
+          em.estado
+    FROM mantenimiento_articulo em
+    INNER JOIN articulos_particular ap
+        ON em.numero_serie = ap.numero_serie
+    INNER JOIN modelos_general mg
+        ON ap.modelo = mg.modelo
+    INNER JOIN usuarios u
+        ON em.numero_control = u.numero_control
+go
+
+create procedure SP_ListarGrupos @Salon varchar(30)
+as select m.clave_materia,
+    m.nombre_materia,
+    g.clave_grupo,
+    u.numero_Control,
+    u.nombre,
+    g.hora_entrada,
+    g.hora_salida,
+    g.dias_laboratorio
+    from grupos g
+    inner join materias m
+        on g.clave_materia = m.clave_materia
+    inner join usuarios u
+        on g.numero_control = u.numero_control
+    where g.salon = @Salon
+go
+
+create procedure SP_ListarInsumos
+    @fechaInicio DATE,
+    @fechaTermino DATE
+AS SELECT m.modelo,
+          m.descripcion,
+          m.categoria,
+          m.marca,
+          a.numero_serie,
+          a.estado,
+          a.ubicacion,
+          a.fecha_Ultimo_Mantenimiento
+   FROM articulos_particular a
+   INNER JOIN modelos_general m
+       ON a.modelo = m.modelo
+   WHERE
+       a.estado = 'Disponible'
+       AND a.fecha_Proximo_Mantenimiento NOT BETWEEN @fechaInicio AND @fechaTermino
+go
+
+create procedure SP_ListarLugares
+as select l.IDLugar,
+          l.nombre,
+          l.estado,
+          l.fecha_ultimo_mantenimiento,
+          l.fecha_proximo_mantenimiento,
+          m.fecha_salida from lugar l
+          inner join mantenimiento_mesa m
+            on m.IDLugar = l.IDLugar
+go
+
+create procedure SP_ListarUsuarios
+as
+    select
+     numero_Control,
+     nombre,
+     correo,
+     telefono,
+     rol from usuarios
+go
+
+create procedure SP_UpdateGrupo
+    @salon NVARCHAR(50),
+    @horaEntrada TIME,
+    @horaSalida TIME,
+    @DiasLaboratorio VARCHAR(100),
+    @ClaveGrupo varchar(10) AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT CASE WHEN EXISTS (
+        SELECT 1 FROM grupos g
+        CROSS APPLY STRING_SPLIT(g.dias_laboratorio, ',') gd
+        CROSS APPLY STRING_SPLIT(@DiasLaboratorio, ',') nd
+        WHERE g.salon = @salon
+            AND gd.value = nd.value
+            AND (g.hora_entrada < @horaSalida AND g.hora_salida > @horaEntrada)
+            and g.clave_grupo <> @ClaveGrupo)
+        THEN 1 ELSE 0
+    END AS Existe;
+END;
+go
+
+create table usuarios(
+    numero_Control varchar(15) primary key,
+    nombre varchar(100),
+    correo varchar(50),
+    telefono varchar(15),
+    password_hash varchar(255),
+    rol varchar(30),
+    attempts int,
+    reset_token varchar(255),
+    token_issued_at datetime,
+    lock_time datetime
+)
+
+insert into usuarios values ('20070639','Luis Adrian Sautto Valle','l20070639@cdmadero.tecnm.mx','8331382190','password','Jefe',0,'', '', '')
+insert into usuarios values ('$NumeroControl','$NombreCompleto','$Correo','$Telefono','password','Jefe',null)
+insert into usuarios values ('20070001','Personal','l20070001@cdmadero.tecnm.mx','8331234567','Personal','Personal',null)
+insert into lugar values ('Salon','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+insert into lugar values ('Mesa 1','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+insert into lugar values ('Mesa 2','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+insert into lugar values ('Mesa 3','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+insert into lugar values ('Mesa 4','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+insert into lugar values ('Mesa 5','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+insert into lugar values ('Mesa 6','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
+
+select * from usuarios
+select * from lugar

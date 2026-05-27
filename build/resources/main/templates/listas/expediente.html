@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+</body>
+<div class="container mt-4">
+    <h5 th:text="|Expediente de mantenimiento del articulo con el numero de serie: ${articulo} |"></h5>
+    <div class="table-responsive">
+        <table class="table table-striped table-border">
+            <thead class="table-dark">
+            <tr>
+                <th scope="col">Personal encargado</th>
+                <th scope="col">Fecha de entrada</th>
+                <th scope="col">Fecha de salida</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider align-middle">
+            <tr th:each="expediente:${expedientes}">
+                <td th:text="${expediente.numeroControl.nombre}"></td>
+                <td th:text="${#dates.format(expediente.fechaEntrada,'dd-MM-yyyy')}"></td>
+                <td th:text="${#dates.format(expediente.fechaSalida,'dd-MM-yyyy')}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</html>

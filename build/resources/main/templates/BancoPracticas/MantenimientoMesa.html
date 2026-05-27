@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{index::head}"></head>
+<style th:replace="~{index::style}"></style>
+<body>
+<div class="container mt-4">
+    <h2 class="text-center"></h2>
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow">
+                <div class="card-header text-center"> <h5>Ingrese los datos de mantenimiento de la mesa</h5> </div>
+                <form class="card-body" th:object="${lugarDTO}" th:action="@{'/lugar/mantenimiento/'+${lugarDTO.idlugar}}" method="post">
+                    <input type="hidden" th:field="*{idlugar}">
+                    <input type="hidden" th:field="*{nombre}">
+                    <input type="hidden" th:field="*{estado}">
+
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="idlugar">Mesa</label>
+                        <div class="col-md-8"> <p class="form-control" th:text="${lugarDTO.nombre}" id="idlugar"></p> </div>
+                    </div>
+
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="numeroControl">Personal Encargado</label>
+                        <div class="col-md-8">
+                            <select class="form-select" th:field="*{numeroControl}" id="numeroControl" required>
+                                <option value="" disabled selected>Seleccione el personal encargado</option>
+                                <option th:each="p:${personal}"
+                                        th:text="|${p.numeroControl} - ${p.nombre}|"
+                                        th:value="${p.numeroControl}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="fechaSalida">Fecha de salida</label>
+                        <div class="col-md-8"> <input th:field="*{fechaSalida}" type="date" id="fechaSalida" class="form-control" required> </div>
+                    </div>
+                    <div class="row mb-3 align-items-center">
+                        <label class="col-md-4 col-form-label" for="fechaProximoMantenimiento">Fecha de proximo mantenimiento</label>
+                        <div class="col-md-8"> <input th:field="*{fechaProximoMantenimiento}" type="date" id="fechaProximoMantenimiento" class="form-control"> </div>
+                    </div>
+                    <div class="d-flex gap-2 justify-content-center mt-3">
+                        <button type="submit" class="btn btn-success">Confirmar</button>
+                        <a th:href="@{/grupos}" class="btn btn-danger"
+                           onclick="return confirm('los datos no se guardaran, ¿Esta seguro que desea cancelar el registro?')">Cancelar registro</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

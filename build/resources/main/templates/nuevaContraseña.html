@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<section class="vh-100 d-flex align-items-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center">
+                <img th:src="@{/img/logo-TecNM.png}"
+                     class="img-fluid mx-auto d-block"
+                     alt="Imagen del Tec" />
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header"><p class="fs-4 text-center mb-0">Ingrese una nueva contraseña</p></div>
+                    <div class="card-body">
+                        <form th:action="@{/resetPassword}" method="post">
+                            <input type="hidden" th:value="${token}" name="token">
+                            <div class="mb-3">
+                                <label class="form-label" for="nuevaContraseña">Ingrese una nueva contraseña</label>
+                                <input name="password" type="password" id="nuevaContraseña"
+                                       class="form-control" placeholder="Ingrese su contraseña">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label" for="confirmarContraseña">Confirmar contraseña</label>
+                                <div class="input-group">
+                                    <input class="form-control" type="password"
+                                           id="confirmarContraseña" name="confirmarPassword"
+                                           placeholder="Confirme su contraseña">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Restaurar contraseña</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+<script>
+    document.querySelector("form").addEventListener("submit", function(e) {
+        const pass = document.getElementById("nuevaContraseña").value;
+        const confirm = document.getElementById("confirmarContraseña").value;
+        if (pass !== confirm) {
+            e.preventDefault();
+            alert("Las contraseñas no coinciden");
+        }
+    });
+</script>
+</html>

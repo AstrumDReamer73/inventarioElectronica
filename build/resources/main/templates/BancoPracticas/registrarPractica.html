@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Paso 1: Registro de Prácticas</h2>
+    <form th:object="${practicaDTO}" th:formaction="@{${accion1}}" enctype="multipart/form-data" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <div class="row justify-content-center">
+            <div class="col-md-6 card shadow-sm p-4 mb-4">
+                <div class="text-center">
+                    <h5 class="mb-3">Datos de la Práctica</h5>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Nombre</label>
+                    <input th:field="*{nombre}" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Materia</label>
+                    <input th:field="*{materia}" list="listaMaterias"
+                           class="form-control" required>
+                    <datalist id="listaMaterias">
+                        <option  th:each="m:${materias}"
+                                 th:value="${m.claveMateria}"
+                                 th:text="${m.nombreMateria}"></option>
+                    </datalist>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Ingrese el archivo en formato PDF</label>
+                    <input type="file" th:field="*{archivo}" accept="application/pdf" required>
+                    <div th:if="${archivoActual != null}">
+                        <a th:href="@{'/practicas/pdf/'+${practicaDTO.IDPractica}}">Ver PDF</a>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-success flex-fill" type="submit" th:text="${titulo}"></button>
+                    <button th:href="@{/practicas/index}" class="btn btn-danger flex-fill"
+                            onclick="return confirm('¿Esta seguro que desea cancelar el registro?, los datos no se guardan')">Cancelar registro</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service @Transactional class usuarioService(
     private val usuariosRepository: usuarioRepository,
@@ -69,17 +70,35 @@ import org.springframework.stereotype.Service
     }
 
     fun updateResetToken(email: String, token: String) {
-        val user = usuariosRepository.findByCorreo(email)
-        user!!.resetToken = token
+        val user = usuariosRepository.findByCorreo(email) ?: throw IllegalArgumentException("Correo no encontrado")
+        user.resetToken = token
+        user.tokenIssuedAt= LocalDateTime.now()
         usuariosRepository.save(user)
     }
 
     fun updatePassword(token: String, newPassword: String){
-        val user= usuariosRepository.findByResetToken(token)
-        if(user!=null){
+        val user= usuariosRepository.findByResetToken(token) ?: throw IllegalArgumentException("Usuario no encontrado")
+        val limit = user.tokenIssuedAt!!.plusHours(1)
+        if(limit != null && LocalDateTime.now().isBefore(limit)){
             user.passwordHash= passwordEncoder.encode(newPassword)!!.trim()
+            user.resetToken=null
+            usuariosRepository.save(user)
+        }else{
             user.resetToken = null
             usuariosRepository.save(user)
-        }else{ throw IllegalArgumentException("token invalido") }
+            throw IllegalArgumentException("token expirado") }
+    }
+
+    fun increaseAttempts(user:usuario){
+        user.attempts +=1
+        if(user.attempts >=10) { user.lockTime = LocalDateTime.now() }
+        usuariosRepository.save(user)
+    }
+
+    fun resetAttempts(numeroControl: String){
+        val user = usuariosRepository.findById(numeroControl).get()
+        user.attempts = 0
+        user.lockTime = null
+        usuariosRepository.save(user)
     }
 }

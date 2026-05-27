@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<h1 class="text-center">Lista de equipos en mantenimiento</h1>
+<div th:replace="~{listas/listaArticulos::success}"></div>
+<div class="col-12 text-end mb-3">
+    <a class="btn btn-danger" th:href="@{/mantenimiento/exportarPDF}">
+        <i class="fa-regular fa-file-pdf"></i>
+        Exportar PDF
+    </a>
+    <a class="btn btn-success" th:href="@{/mantenimiento/exportarExcel}">
+        <i class="fa-regular fa-file-excel"></i>
+        Exportar Excel
+    </a>
+    <a class="btn btn-success"
+       th:href="@{/mantenimiento/registrar}"
+       sec:authorize="!hasAnyAuthority('Docencia','Maestro')">
+        <i class="fa-solid fa-plus"></i>Agregar articulo
+    </a>
+</div>
+<div class="table-responsive">
+    <table id="equiposTable" class="table table-striped table-border align-middle">
+        <thead class="table-dark">
+        <tr>
+            <th scope="col">Numero de serie</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">Descripcion</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Motivo</th>
+            <th scope="col">Personal encargado</th>
+            <th scope="col">Fecha de entrada</th>
+            <th scope="col">Fecha de salida</th>
+            <th scope="col">Estado</th>
+            <th sec:authorize="!hasAnyAuthority('Docencia','Maestro')"></th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider align-middle">
+        <tr th:each="equipo : ${equipos}">
+            <td th:text="${equipo.numeroSerie}"></td>
+            <td th:text="${equipo.modelo}"></td>
+            <td th:text="${equipo.descripcion}"></td>
+            <td th:text="${equipo.marca}"></td>
+            <td th:text="${equipo.motivo}"></td>
+            <td th:text="${equipo.nombre}"></td>
+            <td th:text="${#temporals.format(equipo.fechaEntrada,'dd-MM-yyyy')}"></td>
+            <td th:text="${#temporals.format(equipo.fechaSalida,'dd-MM-yyyy')}"></td>
+            <td th:text="${equipo.estado}"></td>
+            <td>
+                <div th:if="${equipo.numeroControl == usuarioActual.numeroControl or usuarioActual.rol=='Jefe'}"
+                     class="content-center text-center">
+                    <a class="btn btn-primary btn-sm d-flex justify-content-center align-items-center flex-fill mb-1"
+                       th:href="@{'/mantenimiento/editar/'+${equipo.IDEquipoMantenimiento}}">modificar</a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{listas/dataTable::dataTable('equiposTable')}"></footer>
+</body>
+</html>

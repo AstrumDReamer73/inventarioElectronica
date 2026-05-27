@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<h1 class="text-center mb-3" th:text="|Practicas asignadas a la ${lugar}|"></h1>
+<div class="container mt-4">
+    <table class="table table-striped table-border">
+        <thead class="table-dark">
+        <tr>
+            <th scope="col">practica</th>
+            <th scope="col">materia</th>
+            <th scope="col">clave del grupo</th>
+            <th scope="col">nombre del maestro</th>
+            <th scope="col">fecha</th>
+            <th scope="col">horario</th>
+            <th scope="col">estado</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider">
+        <tr th:each="asignacion:${asignaciones}">
+            <td th:text="${asignacion.nombrePractica}"></td>
+            <td th:text="${asignacion.claveMateria}"></td>
+            <td th:text="${asignacion.claveGrupo}"></td>
+            <td th:text="${asignacion.nombreMaestro}"></td>
+            <td th:text="${asignacion.fecha}"></td>
+            <td th:text="|${asignacion.horaEntrada} - ${asignacion.horaSalida}|"></td>
+            <td th:text="${asignacion.estado}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

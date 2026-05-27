@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<header th:replace="~{index::navbar}"></header>
+<h1 class="text-center">Lista de Articulos</h1>
+<div th:if="${success}" th:fragment="success" class="alert-success alert-dismissible text-center alert fade show" role="alert">
+    <span th:text="${success}"></span>
+    <button type="button" class="btn-close" data-bs-dismmiss="alert"></button>
+</div>
+<div class="col-12 text-end mb-3">
+    <a class="btn btn-danger" th:href="@{/articulos/exportarPDF}">
+        <i class="fa-regular fa-file-pdf"></i>
+        Exportar PDF</a>
+    <a class="btn btn-success" th:href="@{/articulos/exportarExcel}">
+        <i class="fa-regular fa-file-excel"></i>
+        Exportar Excel</a>
+    <a class="btn btn-success" th:href="@{/articulos/registrar}"
+       sec:authorize="!hasAnyAuthority('Docencia','Maestro')">Agregar articulo</a>
+</div>
+<div class="table-responsive">
+    <table id="articulosTable" class="table table-hover table-striped table-bordered table-lg">
+        <thead class="table-dark table-striped-columns">
+        <tr>
+            <th scope="col">Numero de serie</th>
+            <th scope="col">Modelo</th>
+            <th scope="col">Descripcion</th>
+            <th scope="col">Categoria</th>
+            <th scope="col">Marca</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Plazo de la garantia</th>
+            <th scope="col">Fecha de Ingreso</th>
+            <th scope="col">Fecha del ultimo mantenimiento</th>
+            <th scope="col">Fecha del proximo mantenimiento</th>
+            <th scope="col">Ubicacion</th>
+            <th sec:authorize="!hasAnyAuthority('Docencia','Maestro')" class="no-export"></th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider align-middle">
+        <tr th:each="articulo : ${articulos}">
+            <td th:text="${articulo.numeroSerie}"></td>
+            <td th:text="${articulo.modelo}"></td>
+            <td th:text="${articulo.descripcion}"></td>
+            <td th:text="${articulo.categoria}"></td>
+            <td th:text="${articulo.marca}"></td>
+            <td th:text="${articulo.estado}"></td>
+            <td th:text="${articulo.plazoGarantia}"></td>
+            <td th:text="${#temporals.format(articulo.getFechaIngreso(),'dd-MM-yyyy')}"></td>
+            <td th:text="${#temporals.format(articulo.getFechaUltimoMantenimiento(),'dd-MM-yyyy')}"></td>
+            <td th:text="${#temporals.format(articulo.getFechaProximoMantenimiento(),'dd-MM-yyyy')}"></td>
+            <td th:text="${articulo.getUbicacion()}"></td>
+            <td sec:authorize="!hasAnyAuthority('Docencia','Maestro')" class="no-export">
+                <div class="content-center text-center">
+                    <a th:href="@{'/articulos/expediente/'+${articulo.numeroSerie}}"
+                       class="btn btn-info btn-sm d-flex justify-content-center align-items-center flex-fill mb-1 text-white">
+                        Expediente de mantenimiento</a>
+                    <a th:if="${#strings.equalsIgnoreCase(#strings.trim(articulo.estado), 'Disponible')}"
+                       th:href="@{'/mantenimiento/registrar/'+${articulo.numeroSerie}}"
+                       class="btn btn-secondary btn-sm d-flex justify-content-center align-items-center flex-fill mb-1 text-white">
+                        Enviar a mantenimiento
+                    </a>
+                    <a th:if="${#strings.equalsIgnoreCase(#strings.trim(articulo.estado), 'Disponible')}"
+                       th:href="@{'/articulos/editar/'+${articulo.numeroSerie}}"
+                       class="btn btn-warning btn-sm d-flex justify-content-center align-items-center flex-fill mb-1 text-white">
+                        Modificar
+                    </a>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="~{listas/dataTable::dataTable('articulosTable')}"></footer>
+<script th:fragment="script">
+    setTimeout(() => {
+        const alert = document.querySelector('.alert')
+        if(alert){
+            alert.classList.remove('show')
+            alert.classList.add('fade')
+        }
+    }, 3000)
+</script>
+</body>
+</html>

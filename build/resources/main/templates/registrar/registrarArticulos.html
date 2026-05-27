@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div class="container mt-4">
+    <h1 class="text-center mb-4" th:text="${titulo}"></h1>
+    <h3 class="text-center mb-4">Ingrese los datos</h3>
+    <form method="post" th:object="${articuloDTO}" th:action="@{${accion}}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" th:field="*{estado}" th:value="Disponible">
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h3>Datos del articulo</h3></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="numeroSerieField">Número de serie</label>
+                            <div class="col-md-9">
+                                <input th:field="*{numeroSerie}" class="form-control" id="numeroSerieField"
+                                       placeholder="Ingrese el número de serie" list="listaArticulos" required>
+                                <datalist th:if="${titulo==registrar}" id="listaArticulos"> <option th:each="a:${listaArticulos}" th:value="${a.numeroSerie}"></option> </datalist>
+                                <small th:if="${#fields.hasErrors('numeroSerie')}"
+                                       th:errors="*{numeroSerie}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="plazoGarantia">Plazo de la garantía</label>
+                            <div class="col-md-9">
+                                <input th:field="*{plazoGarantia}" class="form-control" id="plazoGarantia"
+                                       placeholder="ingrese el plazo de la garantia"
+                                       onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())">
+                                <small th:if="${#fields.hasErrors('plazoGarantia')}"
+                                       th:errors="*{plazoGarantia}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="ubicacion">Ubicacion</label>
+                            <div class="col-md-9">
+                                <input th:field="*{ubicacion}" id="ubicacion" list="listaUbicacion"
+                                       class="form-control" placeholder="Ingrese la ubicacion"
+                                       onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())">
+                                <datalist id="listaUbicacion"> <option th:each="u:${listaUbicacion}" th:value="${u}"></option> </datalist>
+                                <small th:if="${#fields.hasErrors('ubicacion')}"
+                                       th:errors="*{ubicacion}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow">
+                    <div class="card-header text-center"><h3>Datos del modelo</h3></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="modelo">Modelo</label>
+                            <div class="col-md-9">
+                                <input th:field="*{modelo}" class="form-control"
+                                       list="listaModelos" id="modelo" required
+                                       placeholder="ingrese el modelo">
+                                <datalist id="listaModelos"> <option th:each="m : ${listaModelos}" th:value="${m.modelo}" th:text="${m.descripcion}"></option> </datalist>
+                                <small th:if="${#fields.hasErrors('modelo')}"
+                                       th:errors="*{modelo}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="marca">Marca</label>
+                            <div class="col-md-9">
+                                <input th:field="*{marca}" class="form-control" id="marca" placeholder="Ingrese la marca" required
+                                       onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())">
+                                <small th:if="${#fields.hasErrors('marca')}"
+                                       th:errors="*{marca}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="categoria">Categoría</label>
+                            <div class="col-md-9">
+                                <input th:field="*{categoria}" class="form-control"
+                                       list="listaCategorias" id="categoria" autocapitalize="words"
+                                       placeholder="Ingrese una categoria" required
+                                       onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())">
+                                <datalist id="listaCategorias"> <option th:each="c : ${listaCategorias}" th:value="${c}"></option> </datalist>
+                                <small th:if="${#fields.hasErrors('categoria')}"
+                                       th:errors="*{categoria}"
+                                       class="form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-3 col-form-label" for="descripcion">Descripción</label>
+                            <div class="col-md-9">
+                                <textarea th:field="*{descripcion}"
+                                          class="form-control" id="descripcion" rows="4" required
+                                          placeholder="Ingrese la descripcion del modelo"
+                                          onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex gap-2 justify-content-center mt-3">
+                <button type="submit" class="btn btn-success" th:text="${titulo}"></button>
+                <button th:href="@{'/listaArticulos/eliminar/' + ${articuloDTO.numeroSerie}}"
+                        onclick="return confirm('los datos no se guardaran, ¿Esta seguro que desea cancelar el registro?')"
+                        class="btn btn-danger">Cancelar registro</button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const modeloInput = document.getElementById("modelo");
+        modeloInput.addEventListener("input", function () {
+        const modelo = this.value;
+        if (!modelo) return;
+        const opciones = document.querySelectorAll("#listaModelos option");
+        const existe = Array.from(opciones).some(opt => opt.value === modelo);
+        if (!existe) return;
+        fetch(`/articulos/modelo/${modelo}`)
+            .then(response => {
+                if (!response.ok) throw new Error("Modelo no encontrado");
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("descripcion").value = data.descripcion ?? "";
+                document.getElementById("marca").value = data.marca ?? "";
+                document.getElementById("categoria").value = data.categoria ?? "";
+            })
+            .catch(err => console.error(err));
+        });
+    });
+</script>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{index::head}"></head>
+<body>
+<style th:replace="~{index::style}"></style>
+<div>
+    <h1 th:text="${titulo}" class="text-center"></h1>
+    <h3 class="text-center">Ingrese los datos</h3>
+    <form method="post" th:object="${equipoMantenimientoDTO}" th:action="@{${accion}}">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h5>Datos del articulo</h5></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="numeroSerie">Número de serie del artículo</label>
+                            <div class="col-md-8">
+                                <select class="form-select" id="numeroSerie" th:field="*{numeroSerie}" required>
+                                    <option value="" disabled selected>Seleccione un articulo</option>
+                                    <option th:each="a:${listaArticulos}" th:value="${a.numeroSerie}" th:text="|${a.numeroSerie} - ${a.descripcion}|"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="modelo">Modelo</label>
+                            <div class="col-md-8"> <input class="form-control" id="modelo" readonly> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="descripcion">Descripcion</label>
+                             <div class="col-md-8"> <input class="form-control" id="descripcion" readonly> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="marca">Marca</label>
+                            <div class="col-md-8"> <input class="form-control" id="marca" readonly> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="categoria">Categoría</label>
+                            <div class="col-md-8"> <input class="form-control" id="categoria" readonly> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h5>Datos generales</h5></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-5 col-form-label" for="numeroControl">Numero de control del personal encargado</label>
+                            <div class="col-md-7">
+                                <select class="form-select" id="numeroControl" th:field="*{numeroControl}" required>
+                                    <option value="" disabled selected>Seleccione un usuario</option>
+                                    <option th:each="u:${listaUsuarios}" th:value="${u.numerocontrol}"
+                                            th:text="|${u.numeroControl} - ${u.nombre}|"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-5 col-form-label" for="nombre">Nombre del personal Encargado</label>
+                            <div class="col-md-7"> <input class="form-control" id="nombre" readonly> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-5 col-form-label" for="rol">Cargo del personal encargado</label>
+                            <div class="col-md-7"> <input class="form-control" id="rol" readonly> </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-5 col-form-label" for="motivo">Motivo del mantenimiento</label>
+                            <div class="col-md-7">
+                                <input th:field="*{motivo}" class="form-control" id="motivo" required
+                                       placeholder="ingrese el motivo del mantenimiento">
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-5 col-form-label" for="estado">Estado</label>
+                            <div class="col-md-7">
+                                <select th:field="*{estado}" class="form-select mb-1" id="estado" required>
+                                    <option value="" disabled selected>Seleccione un estado</option>
+                                    <option value="En proceso">En proceso</option>
+                                    <option th:if="${edicion}" value="Finalizado">Finalizado</option>
+                                    <option th:if="${edicion}" value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">Si selecciona finalizado o cancelado, el artículo saldra del apartado de mantenimiento</small>
+                        </div>
+                        <div class="row mb-3 align-items-center" th:if="${edicion}" for="estadoArticulo">
+                            <label class="col-md-5 col-form-label" for="estadoArticulo">Estado del articulo</label>
+                            <div class="col-md-7">
+                                <select th:field="*{estadoArticulo}" id="estadoArticulo" class="form-select mb-1">
+                                    <option value="" disabled selected>Ingrese el estado del articulo</option>
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="Destruido">Inservible / Irreparable</option>
+                                </select>
+                            </div>
+                            <small class="text-muted">Si selecciona Inservible, se eliminara el articulo</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow h-100">
+                    <div class="card-header text-center"><h5>Fechas</h5></div>
+                    <div class="card-body">
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="fechaSalida">Fecha de salida</label>
+                            <div class="col-md-8">
+                                <input th:field="*{fechaSalida}" type="date"
+                                       id="fechaSalida" class="form-control">
+                            </div>
+                            <small th:if="${#fields.hasErrors('fechaSalida')}"
+                                   th:errors="*{fechaSalida}"
+                                   class="form-text text-danger"></small>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <label class="col-md-4 col-form-label" for="proximoMantenimiento">Fecha del próximo mantenimiento</label>
+                            <div class="col-md-8">
+                                <input th:field="*{fechaProximoMantenimiento}" type="date"
+                                       id="proximoMantenimiento" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex gap-2 justify-content-center mt-3">
+            <button th:text="${titulo}" type="submit" class="btn btn-success"></button>
+            <button th:href="@{'/mantenimiento/eliminar/' + ${equipoMantenimientoID}}"
+                    onclick="return confirm('¿Esta seguro que desea cancelar?, los datos no se guardaran')"
+                    class="btn btn-danger">Cancelar registro</button>
+        </div>
+    </form>
+</div>
+</body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const numeroSerieField = document.getElementById("numeroSerie");
+    const numeroControlField = document.getElementById("numeroControl");
+
+    function cargarArticulo(numeroSerie) {
+        if (!numeroSerie) return;
+
+        fetch(`/articulos/articulo/${numeroSerie}`)
+        .then(response => {
+            if (!response.ok) throw new Error("Error en la respuesta");
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("modelo").value = data.modelo ?? "";
+            document.getElementById("descripcion").value = data.descripcion ?? "";
+            document.getElementById("marca").value = data.marca ?? "";
+            document.getElementById("categoria").value = data.categoria ?? "";
+        })
+        .catch(err => console.error(err));
+    }
+
+    function cargarUsuario(numeroControl) {
+        if (!numeroControl) return;
+
+        fetch(`/usuarios/usuario/${numeroControl}`)
+        .then(response => {
+            if (!response.ok) throw new Error("No encontrado");
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("nombre").value = data.nombre ?? "";
+            document.getElementById("rol").value = data.rol ?? "";
+        })
+        .catch(err => console.error(err));
+    }
+
+    numeroSerieField.addEventListener("input", function () { cargarArticulo(this.value); });
+    numeroControlField.addEventListener("input", function () { cargarUsuario(this.value); });
+
+    cargarArticulo(numeroSerieField.value);
+    cargarUsuario(numeroControlField.value);
+});
+</script>
+</html>
