@@ -9,21 +9,14 @@ import com.example.inventarioElectronica.Service.insumoPracticaService
 import com.example.inventarioElectronica.Views.insumosView
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.SessionAttributes
-import java.sql.Date
-import java.time.LocalDate
+import org.springframework.web.bind.annotation.*
 
 @RequestMapping("/practicas/asignarInsumos") @SessionAttributes("practicaWizard")
 @Controller class insumoPracticaController(
     private var insumoPracticaService: insumoPracticaService,
     private var articulosService: articulosService
 ) {
-    @ModelAttribute("practicaWizard") fun initWizard(): practicaWizard =practicaWizard(practicaDTO(),asignacionDTO(),mutableListOf())
+    @ModelAttribute("practicaWizard") fun initWizard(): practicaWizard = practicaWizard(practicaDTO(),asignacionDTO(),mutableListOf())
 
     @GetMapping fun mostrarFormularioAsignar(@ModelAttribute("practicaWizard") wizard: practicaWizard, model: Model): String{
         val insumosCompletos = wizard.insumos.map {
@@ -45,11 +38,7 @@ import java.time.LocalDate
         return "BancoPracticas/asignarInsumos"
     }
 
-    @PostMapping
-    fun asignarInsumos(
-        @RequestParam(required = false) numeroSerie: String?,
-        @ModelAttribute("practicaWizard") wizard: practicaWizard
-    ): String {
+    @PostMapping fun asignarInsumos(@RequestParam(required = false) numeroSerie: String?, @ModelAttribute("practicaWizard") wizard: practicaWizard): String {
         numeroSerie?.let{
             if(wizard.insumos.none {i -> i.numeroSerie == it}){
                 wizard.insumos.add(insumoDTO(numeroSerie=it, estado = "Disponble"))
@@ -58,11 +47,7 @@ import java.time.LocalDate
         return "redirect:/practicas/asignarInsumos"
     }
 
-    @PostMapping("/eliminar")
-    fun eliminarInsumo(
-        @RequestParam index:Int,
-        @ModelAttribute("practicaWizard") wizard: practicaWizard
-    ): String {
+    @PostMapping("/eliminar") fun eliminarInsumo(@RequestParam index:Int, @ModelAttribute("practicaWizard") wizard: practicaWizard): String {
         if(index in wizard.insumos.indices){ wizard.insumos.removeAt(index) }
         return "redirect:/practicas/asignarInsumos"
     }

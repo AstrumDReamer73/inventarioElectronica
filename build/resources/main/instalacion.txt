@@ -336,9 +336,8 @@ create table usuarios(
     lock_time datetime
 )
 
-insert into usuarios values ('20070639','Luis Adrian Sautto Valle','l20070639@cdmadero.tecnm.mx','8331382190','password','Jefe',0,'', '', '')
-insert into usuarios values ('$NumeroControl','$NombreCompleto','$Correo','$Telefono','password','Jefe',null)
-insert into usuarios values ('20070001','Personal','l20070001@cdmadero.tecnm.mx','8331234567','Personal','Personal',null)
+insert into usuarios values ('$NumeroControl','$NombreCompleto','$Correo','$Telefono','password','Jefe',0,'','','')
+insert into usuarios values ('20070001','Personal','l20070001@cdmadero.tecnm.mx','8331234567','Personal','Personal',0,'','','')
 insert into lugar values ('Salon','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
 insert into lugar values ('Mesa 1','Disponible',GETDATE(),GETDATE(),GETDATE(),'')
 insert into lugar values ('Mesa 2','Disponible',GETDATE(),GETDATE(),GETDATE(),'')

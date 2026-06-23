@@ -35,11 +35,9 @@ import java.time.LocalTime
             val puedeEnviar = mesa.estado == "Disponible" &&
                     (usuarioActual.rol == "Jefe" || usuarioActual.rol == "Personal")
 
-            mesaVista(
-                mesa = mesa,
-                puedeLiberar = puedeLiberar,
-                puedeEnviar = puedeEnviar
-            )
+            mesaVista(mesa = mesa,
+                      puedeLiberar = puedeLiberar,
+                      puedeEnviar = puedeEnviar)
         }
         model.addAttribute("mesas", vistaMesas)
         return "listas/listaSalones"

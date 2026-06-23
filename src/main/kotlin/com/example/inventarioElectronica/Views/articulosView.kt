@@ -1,6 +1,5 @@
 package com.example.inventarioElectronica.Views
 
-import java.sql.Date
 import java.time.LocalDate
 
 data class articulosView(

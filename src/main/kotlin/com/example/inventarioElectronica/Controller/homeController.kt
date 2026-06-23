@@ -33,9 +33,7 @@ import java.util.UUID
         }else{
             val resetToken = UUID.randomUUID().toString()
             usuarioService.updateResetToken(email, resetToken)
-
             val url = commonUtil.generateUrl(request)+"/resetPassword?token="+resetToken
-
             val correoEnviado = commonUtil.sendMail(url, email)
             if(correoEnviado){ session.setAttribute("errorMessage","Correo enviado, por favor cheque su correo") }
             else{ session.setAttribute("errorMessage","el correo no fue enviado") }
@@ -49,8 +47,7 @@ import java.util.UUID
         return if(user == null){
             session.setAttribute("errorMessage","El link es invalido o ya expiro")
             "redirect:/forgotPassword"
-        }
-        else{
+        }else{
             model.addAttribute("token", token)
             "nuevaContraseña"
         }

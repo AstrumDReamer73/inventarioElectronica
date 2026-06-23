@@ -1,6 +1,5 @@
 package com.example.inventarioElectronica.Views
 
-import java.sql.Time
 import java.time.LocalTime
 
 data class gruposView(

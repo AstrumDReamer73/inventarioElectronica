@@ -86,7 +86,8 @@ import java.time.LocalDateTime
         }else{
             user.resetToken = null
             usuariosRepository.save(user)
-            throw IllegalArgumentException("token expirado") }
+            throw IllegalArgumentException("token expirado")
+        }
     }
 
     fun increaseAttempts(user:usuario){
