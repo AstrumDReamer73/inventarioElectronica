@@ -8,13 +8,6 @@
 <div th:replace="~{listas/listaArticulos::success}"></div>
 <div class="container mt-4">
     <div class="col-12 text-end mb-3">
-        <a class="btn btn-danger" th:href="@{/usuarios/exportarPDF}">
-            <i class="fa-regular fa-file-pdf"></i>
-            Exportar PDF
-        </a>
-        <a class="btn btn-success" th:href="@{/usuarios/exportarExcel}">
-            <i class="fa-regular fa-file-excel"></i>
-            Exportar Excel</a>
         <a class="btn btn-success"
            th:href="@{/usuarios/registrar}"
            sec:authorize="!hasAnyAuthority('Docencia','Maestro')">
@@ -26,9 +19,6 @@
         <tr>
             <th scope="col">Numero de control</th>
             <th scope="col">Nombre</th>
-            <th scope="col">Correo</th>
-            <th scope="col">Telefono</th>
-            <th scope="col">Cargo</th>
             <th sec:authorize="!hasAnyAuthority('Docencia','Maestro')"></th>
         </tr>
         </thead>
@@ -36,9 +26,6 @@
         <tr th:each="usuario:${usuarios}">
             <td th:text="${usuario.numeroControl}"></td>
             <td th:text="${usuario.nombre}"></td>
-            <td th:text="${usuario.correo}"></td>
-            <td th:text="${usuario.telefono}"></td>
-            <td th:text="${usuario.rol}"></td>
             <td sec:authorize="!hasAnyAuthority('Docencia','Maestro')">
                 <div class="content-center text-center">
                     <a class="btn btn-primary btn-sm d-flex justify-content-center align-items-center flex-fill mb-1"

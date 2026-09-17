@@ -1,20 +1,13 @@
 package com.example.inventarioElectronica.Controller
 
 import com.example.inventarioElectronica.DTO.usuarioDTO
-import com.example.inventarioElectronica.Exporters.usuariosExporterExcel
-import com.example.inventarioElectronica.Exporters.usuariosExporterPDF
 import com.example.inventarioElectronica.Service.usuarioService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.bind.support.SessionStatus
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import java.time.LocalDate
@@ -29,7 +22,8 @@ import java.time.LocalDate
     @GetMapping("/usuario/{numeroControl}") @ResponseBody
     fun getUsuario(@PathVariable numeroControl: String): usuarioDTO = usuarioService.findByNumeroControl(numeroControl)
 
-    @GetMapping("/registrar") fun mostrarFormularioRegistrar(model: Model): String{
+    @GetMapping("/registrar")
+    fun mostrarFormularioRegistrar(model: Model): String{
         model.addAttribute("usuario", usuarioDTO())
         model.addAttribute("titulo","Registrar usuario")
         model.addAttribute("accion","/usuarios/registrar")
@@ -84,21 +78,5 @@ import java.time.LocalDate
         flash.addFlashAttribute("success","el usuario ha sido eliminado con exito")
         status.setComplete()
         return "redirect:/usuarios"
-    }
-
-    @GetMapping("/exportarPDF")
-    fun exportarUsuariosPDF(response: HttpServletResponse){
-        response.contentType="application/PDF"
-        response.setHeader("Content-Disposition","attachment; filename=usuarios ${LocalDate.now()}.PDF")
-        val exporter = usuariosExporterPDF(usuarioService.findAllUsuarios())
-        exporter.exportar(response)
-    }
-
-    @GetMapping("/exportarExcel")
-    fun exportarExcel(response: HttpServletResponse){
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        response.setHeader("Content-Disposition","attachment; filename=usuarios ${LocalDate.now()}.xlsx")
-        val exporter = usuariosExporterExcel(usuarioService.findAllUsuarios())
-        exporter.exportar(response)
     }
 }

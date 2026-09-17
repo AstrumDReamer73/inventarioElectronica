@@ -23,6 +23,7 @@ create table usuarios(
     numero_Control varchar(15) primary key,
     nombre varchar(100),
     correo varchar(50),
+    correo_hash varchar(1000)
     telefono varchar(15),
     password_hash varchar(255),
     rol varchar(30),
@@ -296,10 +297,7 @@ create procedure SP_ListarUsuarios
 as
     select
      numero_Control,
-     nombre,
-     correo,
-     telefono,
-     rol from usuarios
+     nombre from usuarios
 go
 
 create procedure SP_UpdateGrupo

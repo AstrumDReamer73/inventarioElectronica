@@ -18,4 +18,6 @@ import org.springframework.stereotype.Repository
     fun findByCorreo(correo: String): usuario?
 
     fun findByResetToken(token: String): usuario?
+
+    fun findByCorreoHash(correoHash: String): usuario?
 }

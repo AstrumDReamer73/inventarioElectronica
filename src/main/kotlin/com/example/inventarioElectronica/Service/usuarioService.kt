@@ -2,7 +2,6 @@ package com.example.inventarioElectronica.Service
 
 import com.example.inventarioElectronica.DTO.usuarioDTO
 import com.example.inventarioElectronica.Model.usuario
-import com.example.inventarioElectronica.Repository.gruposRepository
 import com.example.inventarioElectronica.Repository.usuarioRepository
 import jakarta.transaction.Transactional
 import org.springframework.security.core.userdetails.UserDetails
@@ -18,18 +17,18 @@ import java.time.LocalDateTime
     private val gruposService: gruposService
 ): UserDetailsService {
     override fun loadUserByUsername(numeroControl: String): UserDetails = usuariosRepository.findById(numeroControl)
-                                                                                            .orElseThrow { UsernameNotFoundException("El usuario no existe") }
+        .orElseThrow { UsernameNotFoundException("El usuario no existe") }
 
     fun saveUsuario(usuario: usuarioDTO) {
         if(usuariosRepository.existsById(usuario.numeroControl))
         { throw IllegalArgumentException("ya existe un usuario con numero de control ${usuario.numeroControl}") }
         usuariosRepository.save(
             usuario(numeroControl = usuario.numeroControl,
-                            nombre = usuario.nombre,
-                            telefono = usuario.telefono.replace(Regex("\\D"),""),
-                            correo = usuario.correo.trim(),
-                            passwordHash = passwordEncoder.encode(usuario.passwordHash)!!.trim(),
-                            rol = usuario.rol)
+                nombre = usuario.nombre,
+                telefono = usuario.telefono.replace(Regex("\\D"),""),
+                correo = usuario.correo.trim(),
+                passwordHash = passwordEncoder.encode(usuario.passwordHash)!!.trim(),
+                rol = usuario.rol)
         )
     }
 
