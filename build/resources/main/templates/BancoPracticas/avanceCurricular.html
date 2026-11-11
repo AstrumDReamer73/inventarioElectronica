@@ -53,9 +53,6 @@
                         <div class="card card-body m-2">
                             <h6>Asignación</h6>
                             <p>
-                                <strong>Grupo:</strong>
-                                <span th:text="${item.asignacion?.claveGrupo?.claveGrupo}"></span>
-                                |
                                 <strong>Fecha:</strong>
                                 <span th:text="${#dates.format(item.asignacion?.fecha,'dd-MM-yyyy')}"></span>
                                 |

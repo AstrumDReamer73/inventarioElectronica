@@ -40,7 +40,7 @@
                             <label class="col-md-3 col-form-label" for="ubicacion">Ubicacion</label>
                             <div class="col-md-9">
                                 <input th:field="*{ubicacion}" id="ubicacion" list="listaUbicacion"
-                                       class="form-control" placeholder="Ingrese la ubicacion"
+                                       class="form-control" placeholder="Ingrese la ubicacion" required
                                        onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())">
                                 <datalist id="listaUbicacion"> <option th:each="u:${listaUbicacion}" th:value="${u}"></option> </datalist>
                                 <small th:if="${#fields.hasErrors('ubicacion')}"

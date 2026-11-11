@@ -58,13 +58,11 @@ import java.sql.Date
             )
         } ?: asignacionDTO(IDPractica = practica.IDPracticas,claveGrupo = claveGrupo)
         val lugares = asignacionService.findLugaresDisponibles(wizard.asignacion.fecha, grupo.horaEntrada, grupo.horaSalida, wizard.asignacion.IDLugar)
-        val ruta = if(wizard.asignacion.IDAsignacion == 0) "/practicas/asignacion/asignar/$IDPractica?claveGrupo=$claveGrupo"
-        else "/practicas/asignacion/editar/$IDPractica?claveGrupo=$claveGrupo"
-        val titulo = if(wizard.asignacion.IDAsignacion == 0) "Registrar asignacion"
-        else "Editar asignacion"
+        val ruta = if(wizard.asignacion.IDAsignacion == 0) "/practicas/asignacion/asignar/$IDPractica?claveGrupo=$claveGrupo" else "/practicas/asignacion/editar/$IDPractica?claveGrupo=$claveGrupo"
+        val titulo = if(wizard.asignacion.IDAsignacion == 0) "Registrar asignacion" else "Editar asignacion"
 
         model.addAttribute("asignacionDTO", wizard.asignacion)
-        model.addAttribute("lugares", emptyList<Any>())
+        model.addAttribute("lugares", lugares)
         model.addAttribute("grupo", grupo)
         model.addAttribute("accion2", ruta)
         model.addAttribute("titulo", titulo)

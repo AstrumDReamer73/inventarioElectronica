@@ -62,7 +62,7 @@ import java.time.LocalDate
             return "registrar/registrarArticulos"
         }
         articulosService.saveArticulo(articulo)
-        flash.addFlashAttribute("success", "el Articulo ha sido registrado exitosamente")
+        flash.addFlashAttribute("success", "Articulo registrado exitosamente")
         return "redirect:/articulos"
     }
 
@@ -96,7 +96,7 @@ import java.time.LocalDate
             return "registrar/registrarArticulos"
         }
         articulosService.updateArticulo(articulo)
-        flash.addFlashAttribute("success","articulo modificado exitosamente")
+        flash.addFlashAttribute("success","Articulo modificado exitosamente")
         return "redirect:/articulos"
     }
 

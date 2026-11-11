@@ -56,7 +56,7 @@ import java.time.LocalDate
                               flash: RedirectAttributes,
                               result: BindingResult,
                         session: SessionStatus): String{
-        flash.addFlashAttribute("success","articulo registrado con exito")
+        flash.addFlashAttribute("success","Articulo registrado con exito")
         equiposMantenimientoService.saveEquipoMantenimiento(equipoMantenimiento)
         session.setComplete()
         return "redirect:/mantenimiento"

@@ -12,7 +12,6 @@ data class equipoMantenimientoDTO(
     var estado: String = "",
     var estadoArticulo: String="",
     var descripcion: String="",
-
     var fechaEntrada: Date = Date.valueOf(LocalDate.now()),
     var fechaSalida: Date = Date.valueOf(LocalDate.now().plusDays(1)),
     var fechaProximoMantenimiento: Date = Date.valueOf(LocalDate.now().plusMonths(1)),

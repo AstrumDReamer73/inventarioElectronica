@@ -11,12 +11,12 @@ import java.time.LocalDateTime
 
 @Table(name = "usuarios")
 @Entity data class usuario(
-    @Id var numeroControl: String="",
-    var nombre:String ="",
-    var telefono: String="",
-    var correo:String ="",
-    var passwordHash: String ="",
-    var rol: String="",
+    @Id var numeroControl: String = "",
+    var nombre: String = "",
+    var telefono: String= "",
+    var correo: String = "",
+    var passwordHash: String = "",
+    var rol: String= "",
     var attempts: Int = 0,
     var resetToken: String? = null,
     var tokenIssuedAt: LocalDateTime? = LocalDateTime.now(),

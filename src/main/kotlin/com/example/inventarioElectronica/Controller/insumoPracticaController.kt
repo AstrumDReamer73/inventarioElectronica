@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.*
     @PostMapping fun asignarInsumos(@RequestParam(required = false) numeroSerie: String?, @ModelAttribute("practicaWizard") wizard: practicaWizard): String {
         numeroSerie?.let{
             if(wizard.insumos.none {i -> i.numeroSerie == it}){
-                wizard.insumos.add(insumoDTO(numeroSerie=it, estado = "Disponble"))
+                wizard.insumos.add(insumoDTO(numeroSerie=it, estado = "Disponible"))
             }
         }
         return "redirect:/practicas/asignarInsumos"

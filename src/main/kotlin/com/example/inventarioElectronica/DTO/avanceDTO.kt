@@ -4,6 +4,7 @@ import com.example.inventarioElectronica.Model.asignacionPractica
 import com.example.inventarioElectronica.Model.avanceCurricular
 import com.example.inventarioElectronica.Model.practica
 import com.example.inventarioElectronica.Views.insumosView
+import java.time.LocalDate
 
 data class avanceDTO(
     val practica: practica,

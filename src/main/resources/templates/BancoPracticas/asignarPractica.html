@@ -66,8 +66,7 @@
                             <div class="col-md-8">
                                 <select th:field="*{estado}" class="form-select" id="estado" required>
                                     <option value="" disabled selected>Seleccione un estado</option>
-                                    <option value="Programada" th:if="${asignacionDTO.IDAsignacion == 0}" selected>Programada</option>
-                                    <option value="Programada" th:if="${asignacionDTO.IDAsignacion != 0}" selected>Programada</option>
+                                    <option value="Programada" selected>Programada</option>
                                     <option value="Completada" th:if="${asignacionDTO.IDAsignacion != 0}">Completada</option>
                                     <option value="Cancelada" th:if="${asignacionDTO.IDAsignacion != 0}">Cancelada</option>
                                 </select>

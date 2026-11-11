@@ -27,7 +27,7 @@ import java.time.LocalTime
         if(grupo.horaEntrada >= grupo.horaSalida)
         {throw IllegalArgumentException("La hora de salida debe ser despues de la hora de entrada") }
 
-        val horaEntrada = LocalTime.of(9,0)
+        val horaEntrada = LocalTime.of(7,0)
         val horaSalida = LocalTime.of(20,0)
         if(grupo.horaEntrada.isBefore(horaEntrada) || grupo.horaSalida.isAfter(horaSalida))
         { throw IllegalArgumentException("La hora debe ser despues de las 9 de la mañana y antes de las 8:00 de la tarde") }
@@ -35,7 +35,7 @@ import java.time.LocalTime
         if(gruposRepository.insertGrupo(salon = grupo.salon,
                                         horaEntrada = Time.valueOf(grupo.horaEntrada),
                                         horaSalida = Time.valueOf(grupo.horaSalida),
-                                        diasLaboratorio = grupo.dias.joinToString(separator = ","))==1)
+                                        diasLaboratorio = grupo.dias.joinToString(separator = ", "))==1)
         { throw IllegalArgumentException("Ya existe un grupo con el mismo horario en el salon") }
 
         val maestro = usuariosRepository.findById(grupo.numeroControl)

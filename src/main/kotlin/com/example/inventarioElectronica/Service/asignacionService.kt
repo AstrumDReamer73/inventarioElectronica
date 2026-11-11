@@ -37,8 +37,7 @@ import java.time.LocalDate
         val lugar = lugarRepository.findById(asignacionDTO.IDLugar!!)
             .orElseThrow { IllegalArgumentException("El lugar no existe") }
         avanceCurricularRepository.findByIDPractica_IDPracticasAndClaveGrupo_ClaveGrupo(practica.IDPracticas, grupo.claveGrupo)?.
-        apply { fecha=asignacionDTO.fecha
-            estado= asignacionDTO.estado }
+        apply { fecha=asignacionDTO.fecha; estado= asignacionDTO.estado }
         return asignacionRepository.save(
             asignacionPractica(IDPractica = practica,
                                        claveGrupo = grupo,
@@ -54,17 +53,13 @@ import java.time.LocalDate
 
     fun findByLugar(IDLugar:Int) = asignacionRepository.findByIDLugar_IDLugar(IDLugar)
 
-    fun findLugaresDisponibles(fecha: Date, horaEntrada:Time, horaSalida: Time, IDLugar: Int?): List<lugar>  {
-        println("Fecha: $fecha, Hora Entrada: $horaEntrada, Hora Salida: $horaSalida, IDLugar: $IDLugar")
-        return lugarRepository.checkDisponibilidad(fecha, horaEntrada, horaSalida, IDLugar)
-    }
+    fun findLugarByID(IDLugar: Int) = lugarRepository.findById(IDLugar)
+
+    fun findLugaresDisponibles(fecha: Date, horaEntrada:Time, horaSalida: Time, IDLugar: Int?): List<lugar> = lugarRepository.checkDisponibilidad(fecha, horaEntrada, horaSalida, IDLugar)
 
     fun updateAsignacion(id: Int, dto: asignacionDTO) {
-        println(dto)
         val asignacion = findById(id)
         val insumos = insumosRepository.findByIDAsignacion_IDAsignacion(asignacion.IDAsignacion)
-        println(insumos)
-        println(asignacion)
         when(dto.estado){
             "Programada" -> {
                 asignacion.fecha = dto.fecha

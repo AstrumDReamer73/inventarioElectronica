@@ -14,8 +14,9 @@ data class usuarioDTO(
     @field:Length(min=0, max=50)
     var nombre: String="",
 
-    @field:Length(min=0, max=50) var correo: String="",
-    var passwordHash: String="",
+    @field:Length(min=0, max=50)
+    var correo: String="",
 
+    var passwordHash: String="",
     var rol: String="",
 )

@@ -84,7 +84,7 @@
                         <div class="row mb-3 align-items-center" th:if="${edicion}" for="estadoArticulo">
                             <label class="col-md-5 col-form-label" for="estadoArticulo">Estado del articulo</label>
                             <div class="col-md-7">
-                                <select th:field="*{estadoArticulo}" id="estadoArticulo" class="form-select mb-1">
+                                <select th:field="*{estadoArticulo}" id="estadoArticulo" class="form-select mb-1" required>
                                     <option value="" disabled selected>Ingrese el estado del articulo</option>
                                     <option value="Disponible">Disponible</option>
                                     <option value="Destruido">Inservible / Irreparable</option>

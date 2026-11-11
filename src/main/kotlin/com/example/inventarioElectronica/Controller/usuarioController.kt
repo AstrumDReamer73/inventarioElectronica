@@ -42,7 +42,7 @@ import java.time.LocalDate
             return "registrar/registrarUsuario"
         }
         usuarioService.saveUsuario(usuario)
-        flash.addFlashAttribute("success","el usuario a sido registrado con exito")
+        flash.addFlashAttribute("success","El usuario a sido registrado con exito")
         status.setComplete()
         return "redirect:/usuarios"
     }
@@ -68,14 +68,14 @@ import java.time.LocalDate
             return "registrar/registrarUsuario"
         }
         usuarioService.updateUsuario(usuario)
-        flash.addFlashAttribute("success","el usuario ha sido actualizado con exito")
+        flash.addFlashAttribute("success","El usuario ha sido actualizado con exito")
         return "redirect:/usuarios"
     }
 
     @GetMapping("/eliminar/{numeroControl}")
     fun eliminarUsuario(@PathVariable numeroControl: String, flash: RedirectAttributes, status: SessionStatus): String{
         usuarioService.deleteByNumeroControl(numeroControl)
-        flash.addFlashAttribute("success","el usuario ha sido eliminado con exito")
+        flash.addFlashAttribute("success","El usuario ha sido eliminado con exito")
         status.setComplete()
         return "redirect:/usuarios"
     }

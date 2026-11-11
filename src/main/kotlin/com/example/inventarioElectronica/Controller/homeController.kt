@@ -45,7 +45,7 @@ import java.util.UUID
     fun mostrarCambioContraseña(@RequestParam token: String, session: HttpSession, model: Model): String{
         val user = usuarioService.findByResetToken(token)
         return if(user == null){
-            session.setAttribute("errorMessage","El link es invalido o ya expiro")
+            session.setAttribute("errorMessage","El link es invalido o expirado")
             "redirect:/forgotPassword"
         }else{
             model.addAttribute("token", token)
@@ -59,11 +59,11 @@ import java.util.UUID
                           model: Model): String{
         val user = usuarioService.findByResetToken(token)
         return if(user == null){
-            model.addAttribute("errorMsg","el link es invalido o expirado")
+            model.addAttribute("errorMsg","El link es invalido o expirado")
             "redirect:/forgotPassword"
         } else{
             usuarioService.updatePassword(token, password)
-            model.addAttribute("errorMsg","contraseña actualizada con exito")
+            model.addAttribute("errorMsg","Contraseña actualizada con exito")
             "redirect:/"
         }
     }

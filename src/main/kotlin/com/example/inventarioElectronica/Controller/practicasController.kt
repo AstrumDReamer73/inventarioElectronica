@@ -98,7 +98,7 @@ import java.io.File
         }
         wizard.practica = practica
         practicasService.savePractica(practica)
-        flash.addFlashAttribute("success", "la practica ha sido registrada con exito")
+        flash.addFlashAttribute("success", "La practica ha sido registrada con exito")
         return "redirect:/practicas"
     }
 
@@ -160,7 +160,7 @@ import java.io.File
     @GetMapping("/eliminar/{idPractica}")
     fun eliminarPractica(@PathVariable idPractica: Int, flash: RedirectAttributes): String{
         practicasService.deletePractica(idPractica)
-        flash.addFlashAttribute("success","practica eliminada con exito")
+        flash.addFlashAttribute("success","Practica eliminada con exito")
         return "redirect:/practicas"
     }
 
@@ -184,10 +184,14 @@ import java.io.File
                 ubicacion = articulo.ubicacion)
         }
 
+        val nombre = (asignacionService.findLugarByID(wizard.asignacion.IDLugar!!)
+            .orElseThrow()).nombre
+
         model.addAttribute("practica", wizard.practica)
         model.addAttribute("asignacion", wizard.asignacion)
         model.addAttribute("grupo", grupo)
         model.addAttribute("insumos", insumos)
+        model.addAttribute("lugar", nombre)
         model.addAttribute("titulo", "confirmar practica")
         model.addAttribute("accion5", "/practicas/confirmar")
         return "/BancoPracticas/practicaReview"
@@ -198,7 +202,7 @@ import java.io.File
                                              session: SessionStatus): String{
         val asignacion = asignacionService.saveAsignacion(wizard.asignacion)
         insumosService.saveInsumos(asignacion.IDAsignacion, wizard.insumos)
-        flash.addFlashAttribute("success","practica confirmada con exito")
+        flash.addFlashAttribute("success","Practica confirmada con exito")
         session.setComplete()
         return "redirect:/grupos/avanceCurricular/${asignacion.claveGrupo!!.claveGrupo}"
     }
