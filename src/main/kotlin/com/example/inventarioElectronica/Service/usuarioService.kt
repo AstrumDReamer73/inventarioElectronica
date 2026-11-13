@@ -55,14 +55,11 @@ import java.time.LocalDateTime
     fun updateUsuario(usuario: usuarioDTO){
         val usuarioExistente = usuariosRepository.findById(usuario.numeroControl)
             .orElseThrow { throw IllegalArgumentException("el usuario con el numero de control ${usuario.numeroControl} no existe") }
-        val password = if(usuario.passwordHash.isBlank()){ usuarioExistente.passwordHash }
-        else { passwordEncoder.encode(usuario.passwordHash) }
-
         usuarioExistente.apply {
             nombre = usuario.nombre
             correo = usuario.correo
             telefono = usuario.telefono.replace(Regex("\\D"),"")
-            passwordHash = password!!
+            passwordHash = passwordEncoder.encode(usuario.passwordHash)!!
             rol = usuario.rol
         }
         usuariosRepository.save(usuarioExistente)

@@ -125,7 +125,7 @@ import java.time.LocalTime
         val roles = auth.authorities.map {it.authority}
         val grupo = gruposService.findByClaveGrupo(claveGrupo)
 
-        val grupoDTO= grupoDTO(
+        val grupoDTO = grupoDTO(
             claveGrupo = grupo.claveGrupo,
             numeroControl = grupo.numeroControl!!.numeroControl,
             claveMateria = grupo.claveMateria!!.claveMateria,

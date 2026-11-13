@@ -36,7 +36,35 @@ import java.io.File
     fun initWizard(): practicaWizard = practicaWizard(practicaDTO(),asignacionDTO(),mutableListOf())
 
     @GetMapping fun listarPracticas(model: Model): String {
+        val practicas = practicasService.findAll()
+
+        val auth = SecurityContextHolder.getContext().authentication
+        val userName = auth!!.name
+        val roles = auth.authorities.map { it.authority }
+
+        val esMaestro = roles.contains("Maestro")
+
+        val materiasMaestro: Set<String> = if (esMaestro) {
+            gruposService.findByMaestro(userName)
+                .mapNotNull { it.claveMateria?.claveMateria }
+                .toSet()
+        } else {
+            emptySet()
+        }
+
         model.addAttribute("practicas", practicasService.findAll())
+        model.addAttribute("materiasMaestro", materiasMaestro)
+        model.addAttribute("esMaestro", roles.contains("Maestro"))
+        model.addAttribute("roles", roles)
+        model.addAttribute(
+            "puedeEditar",
+            practicas.associate { practica ->
+                practica.IDPracticas to (
+                        !esMaestro ||
+                                materiasMaestro.contains(practica.materia?.claveMateria)
+                        )
+            }
+        )
         return "BancoPracticas/listaPracticas"
     }
 
@@ -119,7 +147,6 @@ import java.io.File
             val grupos = gruposService.findByMaestro(userName)
             grupos.map { it.claveMateria }.distinct()
         }else{ gruposService.findAllMaterias() }
-
         model.addAttribute("practicaDTO", wizard.practica)
         model.addAttribute("materias", materias)
         model.addAttribute("titulo","Editar practica")

@@ -34,9 +34,13 @@
                     Descargar <i class="fa fa-download"></i></a>
             </td>
             <td sec:authorize="!hasAnyAuthority('Docencia')">
-                <a class="btn btn-primary btn-sm" th:href="@{'/practicas/editar/'+${practica.IDPracticas}}">modificar</a>
-                <a class="btn btn-danger btn-sm" th:href="@{'/practicas/eliminar/'+${practica.IDPracticas}}"
-                   onclick="return confirm('estas seguro')">eliminar</a>
+                <a th:if="${puedeEditar[practica.IDPracticas]}"
+                   th:href="@{'/practicas/editar/'+${practica.IDPracticas}}"
+                   class="btn btn-primary btn-sm" >modificar</a>
+                <a th:if="${puedeEditar[practica.IDPracticas]}"
+                   th:href="@{'/practicas/eliminar/'+${practica.IDPracticas}}"
+                   onclick="return confirm('estas seguro')"
+                   class="btn btn-danger btn-sm">eliminar</a>
             </td>
         </tr>
         </tbody>
