@@ -18,7 +18,7 @@ import java.time.LocalDate
     var motivo: String="",
     var estado: String="",
 
-    var fechaEntrada: Date = Date.valueOf(LocalDate.now()),
-    var fechaSalida: Date = Date.valueOf(LocalDate.now().plusDays(1)),
-    var fechaProximoMantenimiento: Date = Date.valueOf(LocalDate.now().plusMonths(1)),
+    var fechaEntrada: LocalDate = LocalDate.now(),
+    var fechaSalida: LocalDate = LocalDate.now().plusDays(1),
+    var fechaProximoMantenimiento: LocalDate = LocalDate.now().plusMonths(1),
 )

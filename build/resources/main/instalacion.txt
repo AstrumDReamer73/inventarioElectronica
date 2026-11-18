@@ -23,7 +23,6 @@ create table usuarios(
     numero_Control varchar(15) primary key,
     nombre varchar(100),
     correo varchar(50),
-    correo_hash varchar(1000)
     telefono varchar(15),
     password_hash varchar(255),
     rol varchar(30),
@@ -33,7 +32,6 @@ create table usuarios(
     lock_time datetime
 )
 go
-
 
 create table materias(
     clave_materia varchar(4) primary key,
@@ -88,6 +86,7 @@ create table expediente_articulo(
 	numero_control varchar(15) foreign key references usuarios(numero_control),
 	fecha_entrada date,
 	fecha_salida date,
+	observaciones varchar(max)
 )
 go
 
@@ -130,7 +129,8 @@ create table expediente_mesa(
     numero_control varchar(15) foreign key references usuarios(numero_control),
     fecha_entrada date,
     fecha_salida date,
-    fecha_proximo_mantenimiento date
+    fecha_proximo_mantenimiento date,
+    observaciones varchar(max)
 )
 go
 
@@ -320,19 +320,6 @@ BEGIN
     END AS Existe;
 END;
 go
-
-create table usuarios(
-    numero_Control varchar(15) primary key,
-    nombre varchar(100),
-    correo varchar(50),
-    telefono varchar(15),
-    password_hash varchar(255),
-    rol varchar(30),
-    attempts int,
-    reset_token varchar(255),
-    token_issued_at datetime,
-    lock_time datetime
-)
 
 insert into usuarios values ('$NumeroControl','$NombreCompleto','$Correo','$Telefono','password','Jefe',0,'','','')
 insert into usuarios values ('20070001','Personal','l20070001@cdmadero.tecnm.mx','8331234567','Personal','Personal',0,'','','')

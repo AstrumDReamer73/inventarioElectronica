@@ -60,9 +60,7 @@ import java.io.File
             "puedeEditar",
             practicas.associate { practica ->
                 practica.IDPracticas to (
-                        !esMaestro ||
-                                materiasMaestro.contains(practica.materia?.claveMateria)
-                        )
+                        !esMaestro || materiasMaestro.contains(practica.materia?.claveMateria))
             }
         )
         return "BancoPracticas/listaPracticas"

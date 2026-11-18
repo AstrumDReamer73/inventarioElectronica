@@ -30,7 +30,7 @@ import java.time.LocalDate
     @GetMapping("/registrar")
     fun mostrarFormularioAgregar(model: Model): String{
         model.addAttribute("equipoMantenimientoDTO", equipoMantenimientoDTO())
-        model.addAttribute("listaArticulos", articulosService.findAllArticulos().filter{ it.estado == "Disponible"})
+        model.addAttribute("listaArticulos", articulosService.findAllArticulosDisponibles().filter{ it.estado == "Disponible"})
         model.addAttribute("listaUsuarios",usuarioService.findByRol(listOf("Personal","Jefe")))
         model.addAttribute("titulo","Agregar articulo en mantenimiento")
         model.addAttribute("accion","/mantenimiento/registrar")
@@ -43,7 +43,7 @@ import java.time.LocalDate
         val articulo = articulosService.findByNumeroSerie(numeroSerie)
         val equipoMantenimientoDTO = equipoMantenimientoDTO(numeroSerie=articulo.numeroSerie)
         model.addAttribute("equipoMantenimientoDTO", equipoMantenimientoDTO)
-        model.addAttribute("listaArticulos", articulosService.findAllArticulos().filter{ it.estado == "Disponible"})
+        model.addAttribute("listaArticulos", articulosService.findAllArticulosDisponibles().filter{ it.estado == "Disponible"})
         model.addAttribute("listaUsuarios",usuarioService.findByRol(listOf("Personal","Jefe")))
         model.addAttribute("titulo","Agregar articulo en mantenimiento")
         model.addAttribute("accion","/mantenimiento/registrar")
@@ -68,14 +68,14 @@ import java.time.LocalDate
         val usuario = equipoMantenimiento.personalEncargado
 
         val equipoMantenimientoDTO = equipoMantenimientoDTO(IDEquipoMantenimiento = equipoMantenimiento.IDMantenimiento,
-            numeroSerie = articulo!!.numeroSerie,
-            numeroControl = usuario!!.numeroControl,
-            descripcion = articulo.modelo!!.descripcion,
-            motivo = equipoMantenimiento.motivo,
-            estado = equipoMantenimiento.estado,
-            fechaEntrada = equipoMantenimiento.fechaEntrada,
-            fechaSalida = equipoMantenimiento.fechaSalida,
-            fechaProximoMantenimiento = equipoMantenimiento.fechaProximoMantenimiento)
+                                                            numeroSerie = articulo!!.numeroSerie,
+                                                            numeroControl = usuario!!.numeroControl,
+                                                            descripcion = articulo.modelo!!.descripcion,
+                                                            motivo = equipoMantenimiento.motivo,
+                                                            estado = equipoMantenimiento.estado,
+                                                            fechaEntrada = equipoMantenimiento.fechaEntrada,
+                                                            fechaSalida = equipoMantenimiento.fechaSalida,
+                                                            fechaProximoMantenimiento = equipoMantenimiento.fechaProximoMantenimiento)
 
         model.addAttribute("equipoMantenimientoDTO",equipoMantenimientoDTO)
         model.addAttribute("listaArticulos",listOf(equipoMantenimientoDTO))
@@ -90,14 +90,9 @@ import java.time.LocalDate
     fun actualizarEquipoMantenimiento(@PathVariable IDEquipoMantenimiento: Int,
                                       @Valid @ModelAttribute equipoMantenimiento: equipoMantenimientoDTO,
                                       flash: RedirectAttributes): String {
-        println(equipoMantenimiento)
-        if(equipoMantenimiento.estado in listOf("Cancelado","finalizado")){
-            equiposMantenimientoService.updateEquipoMantenimiento(equipoMantenimiento)
-            flash.addFlashAttribute("success","El equipo en mantenimiento ha sido eliminado exitosamente")
-        }else{
-            equiposMantenimientoService.updateEquipoMantenimiento(equipoMantenimiento)
-            flash.addFlashAttribute("success", "El equipo en mantenimiento ha sido actualizado con éxito")
-        }
+        if(equipoMantenimiento.estado in listOf("Cancelado","finalizado")){ flash.addFlashAttribute("success","El equipo en mantenimiento ha sido eliminado exitosamente") }
+        else{ flash.addFlashAttribute("success", "El equipo en mantenimiento ha sido actualizado con éxito") }
+        equiposMantenimientoService.updateEquipoMantenimiento(equipoMantenimiento)
         return "redirect:/mantenimiento"
     }
 

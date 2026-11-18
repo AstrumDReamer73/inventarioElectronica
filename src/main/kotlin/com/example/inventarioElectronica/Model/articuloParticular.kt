@@ -1,7 +1,7 @@
 package com.example.inventarioElectronica.Model
 
 import jakarta.persistence.*
-import java.sql.Date
+import java.time.LocalDate
 
 @Table(name="articulos_particular")
 @Entity data class articuloParticular(
@@ -13,7 +13,7 @@ import java.sql.Date
     var estado: String = "",
     var ubicacion: String = "",
     var plazoGarantia: String = "",
-    var fechaIngreso: Date ?= null,
-    var fechaUltimoMantenimiento: Date ?= null,
-    var fechaProximoMantenimiento: Date ?= null
+    var fechaIngreso: LocalDate = LocalDate.now(),
+    var fechaUltimoMantenimiento: LocalDate = LocalDate.now(),
+    var fechaProximoMantenimiento: LocalDate = LocalDate.now()
 )

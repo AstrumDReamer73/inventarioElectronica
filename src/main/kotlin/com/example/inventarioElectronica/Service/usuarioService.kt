@@ -21,7 +21,7 @@ import java.time.LocalDateTime
 
     fun saveUsuario(usuario: usuarioDTO) {
         if(usuariosRepository.existsById(usuario.numeroControl))
-        { throw IllegalArgumentException("ya existe un usuario con numero de control ${usuario.numeroControl}") }
+        { throw IllegalArgumentException("Ya existe un usuario con numero de control ${usuario.numeroControl}") }
         usuariosRepository.save(
             usuario(numeroControl = usuario.numeroControl,
                 nombre = usuario.nombre,
@@ -43,18 +43,19 @@ import java.time.LocalDateTime
     fun findByResetToken(token: String) = usuariosRepository.findByResetToken(token)
 
     fun deleteByNumeroControl(numeroControl: String) {
+        println(gruposService.findByMaestro(numeroControl))
         val usuarioExistente = usuariosRepository.findById(numeroControl)
-            .orElseThrow { throw IllegalArgumentException("el usuario con numero de control ${numeroControl}") }
+            .orElseThrow { throw IllegalArgumentException("El usuario con numero de control ${numeroControl}") }
         if(usuarioExistente.rol == "Personal" && usuariosRepository.findByRolIn(listOf("Personal")).size <= 1)
-        { throw IllegalArgumentException("no se puede eliminar al usuario con numero de control ${numeroControl} porque es el unico usuario con rol Personal") }
-        if(usuarioExistente.rol == "Maestro" && gruposService.findByMaestro(numeroControl).isEmpty())
-        { throw IllegalArgumentException("el maestro tiene grupos asignados, debe eliminarlos primero para poder eliminar al maestro") }
+        { throw IllegalArgumentException("No se puede eliminar al usuario con numero de control ${numeroControl} porque es el unico usuario con rol Personal") }
+        if(usuarioExistente.rol == "Maestro" && gruposService.findByMaestro(numeroControl).isNotEmpty())
+        { throw IllegalArgumentException("El maestro tiene grupos asignados, debe eliminarlos primero para poder eliminar al maestro") }
         usuariosRepository.deleteById(numeroControl)
     }
 
     fun updateUsuario(usuario: usuarioDTO){
         val usuarioExistente = usuariosRepository.findById(usuario.numeroControl)
-            .orElseThrow { throw IllegalArgumentException("el usuario con el numero de control ${usuario.numeroControl} no existe") }
+            .orElseThrow { throw IllegalArgumentException("El usuario con el numero de control ${usuario.numeroControl} no existe") }
         usuarioExistente.apply {
             nombre = usuario.nombre
             correo = usuario.correo
@@ -82,7 +83,7 @@ import java.time.LocalDateTime
         }else{
             user.resetToken = null
             usuariosRepository.save(user)
-            throw IllegalArgumentException("token expirado")
+            throw IllegalArgumentException("Token expirado")
         }
     }
 

@@ -1,6 +1,7 @@
 package com.example.inventarioElectronica.Service
 
 import com.example.inventarioElectronica.DTO.asignacionDTO
+import com.example.inventarioElectronica.Model.articuloParticular
 import com.example.inventarioElectronica.Model.asignacionPractica
 import com.example.inventarioElectronica.Model.lugar
 import com.example.inventarioElectronica.Model.mantenimientoArticulo
@@ -25,9 +26,7 @@ import java.time.LocalDate
     private val gruposRepository: gruposRepository,
     private val avanceCurricularRepository: avanceCurricularRepository,
     private val insumosRepository: insumosRepository,
-    private val usuariosRepository: usuarioRepository,
     private val lugarRepository: lugarRepository,
-    private val equipoMantenimientoRepository: mantenimientoArticuloRepository,
     private val articulosRepository: articuloParticularRepository
 ) {
     fun saveAsignacion(asignacionDTO: asignacionDTO): asignacionPractica {
@@ -83,18 +82,14 @@ import java.time.LocalDate
             }
 
             "Completada" -> {
+                val listaArticulos: MutableList<articuloParticular> =mutableListOf()
                 insumos.forEach {
                     val articulo = it.articulo!!
-                    articulo.estado="Mantenimiento NA"
-                    val equipo = mantenimientoArticulo(equipo = articulo,
-                                                       personalEncargado = usuariosRepository.findByRolIn(listOf("Personal")).random(),
-                                                       motivo = "Inspeccion despues de practica",
-                                                       estado = "Asignacion Temporal",
-                                                       fechaEntrada = Date.valueOf(LocalDate.now()),
-                                                       fechaSalida = Date.valueOf(LocalDate.now()),
-                                                       fechaProximoMantenimiento = Date.valueOf(LocalDate.now()))
-                    equipoMantenimientoRepository.save(equipo)
+                    articulo.estado="Disponible"
+                    listaArticulos.add(articulo)
                 }
+                articulosRepository.saveAll<articuloParticular>(listaArticulos)
+
                 val avanceCurricular = avanceCurricularRepository.findByIDPractica_IDPracticasAndClaveGrupo_ClaveGrupo(asignacion.IDPractica!!.IDPracticas, asignacion.claveGrupo!!.claveGrupo)
                 avanceCurricular!!.estado="Completada"
                 avanceCurricular.fecha=asignacion.fecha

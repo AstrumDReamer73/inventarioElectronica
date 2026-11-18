@@ -1,21 +1,19 @@
 package com.example.inventarioElectronica.DTO
 
-import org.hibernate.validator.constraints.Length
-import java.sql.Date
 import java.time.LocalDate
 
 data class articuloDTO(
-    @field:Length(min=0, max=50) var numeroSerie: String ="",
-    @field:Length(min=0, max=50) var plazoGarantia: String ="",
-    @field:Length(min=0, max=50) var ubicacion: String ="",
+    var modelo: String = "",
+    var descripcion: String = "",
+    var categoria: String = "",
+    var marca: String = "",
 
-    @field:Length(min=0, max=50) var modelo: String ="",
-    @field:Length(min=0, max=50) var marca: String ="",
-    @field:Length(min=0, max=50) var categoria: String ="",
-    var descripcion: String ="",
+    var numeroSerie: String = "",
+    var estado: String = "",
+    var plazoGarantia: String = "",
+    var ubicacion: String = "",
 
-    var estado: String ="",
-    var fechaIngreso: Date? = Date.valueOf(LocalDate.now()),
-    var fechaUltimoMantenimiento: Date? = Date.valueOf(LocalDate.now()),
-    var fechaProximoMantenimiento: Date? = Date.valueOf(LocalDate.now().plusMonths(1)),
+    var fechaIngreso: LocalDate = LocalDate.now(),
+    var fechaUltimoMantenimiento: LocalDate = LocalDate.now(),
+    var fechaProximoMantenimiento: LocalDate = LocalDate.now()
 )

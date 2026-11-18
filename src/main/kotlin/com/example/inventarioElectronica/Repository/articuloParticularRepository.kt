@@ -1,5 +1,6 @@
 package com.example.inventarioElectronica.Repository
 
+import com.example.inventarioElectronica.DTO.articuloDTO
 import com.example.inventarioElectronica.Model.articuloParticular
 import com.example.inventarioElectronica.Views.articulosView
 import org.springframework.data.jpa.repository.EntityGraph
@@ -13,6 +14,9 @@ import org.springframework.stereotype.Repository
 
     @Query(value = "SP_ListarArticulos", nativeQuery = true)
     fun findAllView(): List<articulosView>
+
+    @Query(value = "SP_ListarArticulosEnEliminacion", nativeQuery = true)
+    fun findAllEliminados(): List<articulosView>
 
     @EntityGraph(attributePaths = ["modelo"])
     @Query("select distinct a.ubicacion from articuloParticular a")

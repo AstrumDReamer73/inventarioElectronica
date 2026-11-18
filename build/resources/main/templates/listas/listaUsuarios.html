@@ -4,9 +4,9 @@
 <body>
 <style th:replace="~{index::style}"></style>
 <header th:replace="~{index :: navbar}"></header>
-<h1 class="text-center">Lista de Usuarios</h1>
-<div th:replace="~{listas/listaArticulos::success}"></div>
-<div class="container mt-4">
+<div class="container-fluid px-3 mt-4 mb-4">
+    <h1 class="text-center">Lista de Usuarios</h1>
+    <div th:replace="~{listas/listaArticulos::success}"></div>
     <div class="col-12 text-end mb-3">
         <a class="btn btn-success"
            th:href="@{/usuarios/registrar}"

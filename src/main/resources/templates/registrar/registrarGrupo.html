@@ -3,7 +3,7 @@
 <head th:replace="~{index::head}"></head>
 <body>
 <style th:replace="~{index::style}"></style>
-<div>
+<div class="container-fluid px-3 mt-4 mb-4">
     <h1 th:text="${titulo}" class="text-center"></h1>
     <h3 class="text-center">Ingrese los datos</h3>
     <form method="post" th:object="${grupoDTO}" th:action="@{${accion}}">

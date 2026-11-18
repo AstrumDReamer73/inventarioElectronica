@@ -45,9 +45,11 @@ import org.springframework.stereotype.Service
 
     fun findAllCategorias() = modeloGeneralRepository.findAllCategorias()
 
-    fun findAllArticulos():List<articulosView> = articuloParticularRepository.findAllView()
+    fun findAllArticulosDisponibles():List<articulosView> = articuloParticularRepository.findAllView()
 
     fun findAllUbicaciones() = articuloParticularRepository.findAllUbicaciones()
+
+    fun findAllEnEliminacion() = articuloParticularRepository.findAllEliminados()
 
     fun findByNumeroSerie(numeroSerie: String):articuloDTO{
         val articulo = articuloParticularRepository.findByNumeroSerie(numeroSerie)
@@ -82,6 +84,22 @@ import org.springframework.stereotype.Service
             ubicacion = dto.ubicacion.trim()
         }
         modeloGeneralRepository.save(modelo)
+        articuloParticularRepository.save(articulo)
+    }
+
+    fun delete(numeroSerie: String) {
+        val articulo = articuloParticularRepository.findById(numeroSerie)
+            .orElseThrow { IllegalArgumentException("El articulo no existe") }
+        val modelo = articulo.modelo!!
+        expedienteMantenimientoRepository.deleteAll(expedienteMantenimientoRepository.findByNumeroSerie_NumeroSerie(articulo.numeroSerie))
+        articuloParticularRepository.delete(articulo)
+        if(articuloParticularRepository.countByModelo_Modelo(modelo.modelo).toInt()==0){ modeloGeneralRepository.delete(modelo) }
+    }
+
+    fun restaurar(numeroSerie: String) {
+        val articulo = articuloParticularRepository.findById(numeroSerie)
+            .orElseThrow { IllegalArgumentException("El articulo no existe") }
+        articulo.estado="Disponible"
         articuloParticularRepository.save(articulo)
     }
 

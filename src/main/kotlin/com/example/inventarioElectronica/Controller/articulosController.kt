@@ -16,8 +16,54 @@ import java.time.LocalDate
 @RequestMapping("/articulos")
 @Controller class articulosController(private var articulosService: articulosService){
     @GetMapping fun listarArticulos(model: Model): String {
-        model.addAttribute("articulos",articulosService.findAllArticulos())
+        val listaArticulos = articulosService.findAllArticulosDisponibles()
+        model.addAttribute("articulos",listaArticulos)
+        model.addAttribute("EnEliminacion", false)
         return "listas/listaArticulos"
+    }
+
+    @GetMapping("/En_Eliminacion")
+    fun mostrarSoloArticulosAEliminar(model: Model): String{
+        model.addAttribute("articulos", articulosService.findAllEnEliminacion())
+        model.addAttribute("EnEliminacion", true)
+        return "listas/listaArticulos"
+    }
+
+    @GetMapping("/eliminar/{numeroSerie}")
+    fun eliminarArticulo(@PathVariable numeroSerie: String, flash: RedirectAttributes): String{
+        articulosService.delete(numeroSerie)
+        flash.addFlashAttribute("success","Articulo eliminado con exito")
+        return "redirect:/articulos"
+    }
+
+    @GetMapping("/restaurar/{numeroSerie}")
+    fun restaurarArticulo(@PathVariable numeroSerie: String, flash: RedirectAttributes): String{
+        articulosService.restaurar(numeroSerie)
+        flash.addFlashAttribute("success","Articulo restaurado con exito")
+        return "redirect:/articulos"
+    }
+
+    @GetMapping("/exportarPDF")
+    fun exportarPDF(response: HttpServletResponse){
+        response.contentType="application/pdf"
+        response.setHeader("Content-Disposition","attachment; filename=articulos ${LocalDate.now()}.pdf")
+        val exporter= articulosExporterPDF(articulosService.findAllArticulosDisponibles().sortedBy{ it.ubicacion })
+        exporter.exportar(response)
+    }
+
+    @GetMapping("/exportarExcel")
+    fun exportarExcel(response: HttpServletResponse){
+        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        response.setHeader("Content-Disposition","attachment; filename=articulos ${LocalDate.now()}.xlsx")
+        val exporter = articulosExporterExcel(articulosService.findAllArticulosDisponibles().sortedBy{ it.ubicacion })
+        exporter.exportar(response)
+    }
+
+    @GetMapping("/exportarEliminados")
+    fun exportarEliminados(response: HttpServletResponse){
+        response.contentType="application/pdf"
+        response.setHeader("Content-Disposition","attachment; filename=articulos a eliminar ${LocalDate.now()}.pdf")
+        val exporter = articulosExporterPDF(articulosService.findAllEnEliminacion().sortedBy { it.fechaUltimoMantenimiento })
     }
 
     @GetMapping("/articulo/{numeroSerie}") @ResponseBody
@@ -39,7 +85,7 @@ import java.time.LocalDate
         model.addAttribute("articuloDTO", articuloDTO(estado = "Disponible"))
         model.addAttribute("titulo", "Registrar articulos")
         model.addAttribute("accion", "/articulos/registrar")
-        model.addAttribute("listaArticulos",articulosService.findAllArticulos())
+        model.addAttribute("listaArticulos",articulosService.findAllArticulosDisponibles())
         model.addAttribute("listaModelos", articulosService.findAllModelos())
         model.addAttribute("listaCategorias", articulosService.findAllCategorias())
         model.addAttribute("listaUbicacion", articulosService.findAllUbicaciones())
@@ -55,7 +101,7 @@ import java.time.LocalDate
             model.addAttribute("articuloDTO", articulo)
             model.addAttribute("titulo", "Registrar articulos")
             model.addAttribute("accion", "/articulos/registrar")
-            model.addAttribute("listaArticulos",articulosService.findAllArticulos())
+            model.addAttribute("listaArticulos",articulosService.findAllArticulosDisponibles())
             model.addAttribute("listaModelos", articulosService.findAllModelos())
             model.addAttribute("listaCategorias", articulosService.findAllCategorias())
             model.addAttribute("listaUbicacion", articulosService.findAllUbicaciones())
@@ -70,7 +116,7 @@ import java.time.LocalDate
     fun mostrarFormularioEditar(@PathVariable numeroSerie: String, model: Model): String {
         val articuloDTO = articulosService.findByNumeroSerie(numeroSerie)
         model.addAttribute("articuloDTO",articuloDTO)
-        model.addAttribute("listaArticulos",articulosService.findAllArticulos())
+        model.addAttribute("listaArticulos",articulosService.findAllArticulosDisponibles())
         model.addAttribute("listaModelos", articulosService.findAllModelos())
         model.addAttribute("listaCategorias", articulosService.findAllCategorias())
         model.addAttribute("listaUbicacion", articulosService.findAllUbicaciones())
@@ -87,7 +133,7 @@ import java.time.LocalDate
                            model: Model): String {
         if(result.hasErrors()){
             model.addAttribute("articuloDTO",articulo)
-            model.addAttribute("listaArticulos",articulosService.findAllArticulos())
+            model.addAttribute("listaArticulos",articulosService.findAllArticulosDisponibles())
             model.addAttribute("listaModelos", articulosService.findAllModelos())
             model.addAttribute("listaCategorias", articulosService.findAllCategorias())
             model.addAttribute("listaUbicacion", articulosService.findAllUbicaciones())
@@ -98,21 +144,5 @@ import java.time.LocalDate
         articulosService.updateArticulo(articulo)
         flash.addFlashAttribute("success","Articulo modificado exitosamente")
         return "redirect:/articulos"
-    }
-
-    @GetMapping("/exportarPDF")
-    fun exportarPDF(response: HttpServletResponse){
-        response.contentType="application/pdf"
-        response.setHeader("Content-Disposition","attachment; filename=articulos ${LocalDate.now()}.pdf")
-        val exporter= articulosExporterPDF(articulosService.findAllArticulos().sortedBy{ it.ubicacion })
-        exporter.exportar(response)
-    }
-
-    @GetMapping("/exportarExcel")
-    fun exportarExcel(response: HttpServletResponse){
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        response.setHeader("Content-Disposition","attachment; filename=articulos ${LocalDate.now()}.xlsx")
-        val exporter = articulosExporterExcel(articulosService.findAllArticulos().sortedBy{ it.ubicacion })
-        exporter.exportar(response)
     }
 }

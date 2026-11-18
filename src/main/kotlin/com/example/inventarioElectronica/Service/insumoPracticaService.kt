@@ -43,7 +43,7 @@ import java.time.LocalDate
                         categoria = modelo.categoria,
                         marca = modelo.marca,
                         numeroSerie = articulo.numeroSerie,
-                        fechaUltimoMantenimiento = articulo.fechaUltimoMantenimiento!!.toLocalDate(),
+                        fechaUltimoMantenimiento = articulo.fechaUltimoMantenimiento,
                         estado = articulo.estado,
                         ubicacion = articulo.ubicacion)
         }

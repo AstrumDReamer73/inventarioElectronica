@@ -1,13 +1,11 @@
 package com.example.inventarioElectronica.Exporters
 
-import com.example.inventarioElectronica.DTO.articuloDTO
 import com.example.inventarioElectronica.Views.articulosView
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
 import jakarta.servlet.http.HttpServletResponse
-import kotlin.toString
 
 class articulosExporterPDF(private val listaArticulos: List<articulosView>) {
     fun exportar(response: HttpServletResponse) {

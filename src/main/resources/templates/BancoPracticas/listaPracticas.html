@@ -4,11 +4,11 @@
 <body>
 <style th:replace="~{index::style}"></style>
 <header th:replace="~{index::navbar}"></header>
-<div class="container mt-4">
+<div class="container-fluid px-3 mt-4 mb-4">
     <div th:replace="~{listas/listaArticulos::success}"></div>
     <h1 class="text-center mb-3">Banco de practicas</h1>
     <div class="col-12 text-end">
-        <a class="btn btn-success"
+        <a class="btn btn-success mb-2"
            th:href="@{/practicas/registrar}"
            sec:authorize="!hasAnyAuthority('Docencia')">Registrar Practica</a>
     </div>
@@ -36,11 +36,11 @@
             <td sec:authorize="!hasAnyAuthority('Docencia')">
                 <a th:if="${puedeEditar[practica.IDPracticas]}"
                    th:href="@{'/practicas/editar/'+${practica.IDPracticas}}"
-                   class="btn btn-primary btn-sm" >modificar</a>
+                   class="btn btn-primary btn-sm" >Modificar</a>
                 <a th:if="${puedeEditar[practica.IDPracticas]}"
                    th:href="@{'/practicas/eliminar/'+${practica.IDPracticas}}"
                    onclick="return confirm('estas seguro')"
-                   class="btn btn-danger btn-sm">eliminar</a>
+                   class="btn btn-danger btn-sm">Eliminar</a>
             </td>
         </tr>
         </tbody>

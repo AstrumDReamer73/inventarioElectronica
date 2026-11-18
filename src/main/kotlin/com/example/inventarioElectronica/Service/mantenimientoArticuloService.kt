@@ -6,20 +6,18 @@ import com.example.inventarioElectronica.Model.mantenimientoArticulo
 import com.example.inventarioElectronica.Repository.articuloParticularRepository
 import com.example.inventarioElectronica.Repository.mantenimientoArticuloRepository
 import com.example.inventarioElectronica.Repository.expedienteArticuloRepository
-import com.example.inventarioElectronica.Repository.modeloGeneralRepository
 import com.example.inventarioElectronica.Repository.usuarioRepository
 import com.example.inventarioElectronica.Views.equiposMantenimientoView
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import java.sql.Date
 import java.time.LocalDate
+import kotlin.require
 
 @Service @Transactional class mantenimientoArticuloService(
     private val equipoMantenimientoRepository: mantenimientoArticuloRepository,
     private val articuloParticularRepository: articuloParticularRepository,
     private val expedienteMantenimientoRepository: expedienteArticuloRepository,
-    private val usuariosRepository: usuarioRepository,
-    private val modeloGeneralRepository: modeloGeneralRepository
+    private val usuariosRepository: usuarioRepository
 ) {
     fun saveEquipoMantenimiento(equipoMantenimiento: equipoMantenimientoDTO) {
         val articulo = articuloParticularRepository.findById(equipoMantenimiento.numeroSerie)
@@ -28,7 +26,7 @@ import java.time.LocalDate
             .orElseThrow { IllegalArgumentException("El usuario no existe") }
         if(articulo.estado.equals("En mantenimiento")){ throw IllegalArgumentException("El articulo ya esta en mantenimiento") }
 
-        require(equipoMantenimiento.fechaEntrada >= Date.valueOf(LocalDate.now()))
+        require(equipoMantenimiento.fechaEntrada >= LocalDate.now())
         { "La fecha de entrada no puede ser anterior a hoy" }
         require(equipoMantenimiento.fechaEntrada <= equipoMantenimiento.fechaSalida)
         { "La fecha de entrada no puede ser después de la fecha salida" }
@@ -46,7 +44,7 @@ import java.time.LocalDate
                                           personalEncargado = usuario,
                                           motivo = equipoMantenimiento.motivo.trim(),
                                           estado = equipoMantenimiento.estado.trim(),
-                                          fechaEntrada = Date.valueOf(LocalDate.now()),
+                                          fechaEntrada = LocalDate.now(),
                                           fechaSalida = equipoMantenimiento.fechaSalida,
                                           fechaProximoMantenimiento = equipoMantenimiento.fechaProximoMantenimiento)
         )
@@ -78,7 +76,7 @@ import java.time.LocalDate
 
         when(dto.estado){
             "Finalizado" -> {
-                require(LocalDate.now() >= dto.fechaSalida.toLocalDate())
+                require(LocalDate.now() >= dto.fechaSalida)
                 { "Para poder marcar un artículo como finalizado, la fecha de hoy debe ser igual o posterior a la fecha de salida" }
                 if(dto.estadoArticulo=="Disponible"){
                     articulo.estado = "Disponible"
@@ -90,20 +88,18 @@ import java.time.LocalDate
                     )
                     articuloParticularRepository.save(articulo)
                     expedienteMantenimientoRepository.save(expediente)
-                    equipoMantenimientoRepository.delete(equipoMantenimiento)
                 }else{
-                    val modelo = articulo.modelo!!.modelo
-                    expedienteMantenimientoRepository.deleteAll(expedienteMantenimientoRepository.findByNumeroSerie_NumeroSerie(articulo.numeroSerie))
-                    articuloParticularRepository.delete(articulo)
-                    equipoMantenimientoRepository.delete(equipoMantenimiento)
-                    if(articuloParticularRepository.countByModelo_Modelo(modelo).toInt()==0){ modeloGeneralRepository.delete(modeloGeneralRepository.findById(modelo).orElseThrow()) }
+                    articulo.estado="En proceso de eliminacion"
+                    articulo.fechaProximoMantenimiento= LocalDate.of(1900,1,1)
+                    articulo.fechaUltimoMantenimiento = equipoMantenimiento.fechaProximoMantenimiento
+                    articuloParticularRepository.save(articulo)
                 }
             }
             "Cancelado" -> {
                 articulo.estado= "Disponible"
                 articuloParticularRepository.save(articulo)
-                equipoMantenimientoRepository.delete(equipoMantenimiento)
             }
         }
+        equipoMantenimientoRepository.delete(equipoMantenimiento)
     }
 }

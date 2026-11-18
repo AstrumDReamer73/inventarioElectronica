@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*
                 descripcion = articulo.descripcion,
                 categoria = articulo.categoria,
                 marca = articulo.marca,
-                fechaUltimoMantenimiento = articulo.fechaUltimoMantenimiento!!.toLocalDate(),
+                fechaUltimoMantenimiento = articulo.fechaUltimoMantenimiento,
                 ubicacion = articulo.ubicacion,
                 estado = it.estado
             )
