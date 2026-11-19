@@ -12,7 +12,6 @@
            th:href="@{/grupos/registrar}"
            sec:authorize="!hasAuthority('Docencia')">Registrar Grupo</a>
     </div>
-    <div th:replace="~{listas/listaArticulos::success}"></div>
     <div class="table-responsive">
         <table id="gruposTable" class="table-striped table-bordered table">
             <thead class="table-dark table-striped-columns">

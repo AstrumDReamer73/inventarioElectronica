@@ -29,7 +29,7 @@
                             <label class="col-md-3 col-form-label" for="plazoGarantia">Plazo de la garantía</label>
                             <div class="col-md-9">
                                 <input th:field="*{plazoGarantia}" class="form-control" id="plazoGarantia"
-                                       placeholder="ingrese el plazo de la garantia"
+                                       placeholder="Ingrese el plazo de la garantia"
                                        onblur="this.value = this.value.replace(/^\p{L}/u, c => c.toUpperCase())">
                                 <small th:if="${#fields.hasErrors('plazoGarantia')}"
                                        th:errors="*{plazoGarantia}"
@@ -60,7 +60,7 @@
                             <div class="col-md-9">
                                 <input th:field="*{modelo}" class="form-control"
                                        list="listaModelos" id="modelo" required
-                                       placeholder="ingrese el modelo">
+                                       placeholder="Ingrese el modelo">
                                 <datalist id="listaModelos"> <option th:each="m : ${listaModelos}" th:value="${m.modelo}" th:text="${m.descripcion}"></option> </datalist>
                                 <small th:if="${#fields.hasErrors('modelo')}"
                                        th:errors="*{modelo}"

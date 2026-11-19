@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.support.SessionStatus
 import org.springframework.web.servlet.mvc.support.RedirectAttributes
 import java.time.LocalDate
 
@@ -22,7 +23,7 @@ import java.time.LocalDate
         return "listas/listaArticulos"
     }
 
-    @GetMapping("/En_Eliminacion")
+    @GetMapping("/Eliminacion")
     fun mostrarSoloArticulosAEliminar(model: Model): String{
         model.addAttribute("articulos", articulosService.findAllEnEliminacion())
         model.addAttribute("EnEliminacion", true)
@@ -64,6 +65,7 @@ import java.time.LocalDate
         response.contentType="application/pdf"
         response.setHeader("Content-Disposition","attachment; filename=articulos a eliminar ${LocalDate.now()}.pdf")
         val exporter = articulosExporterPDF(articulosService.findAllEnEliminacion().sortedBy { it.fechaUltimoMantenimiento })
+        exporter.exportar(response)
     }
 
     @GetMapping("/articulo/{numeroSerie}") @ResponseBody
@@ -96,6 +98,7 @@ import java.time.LocalDate
     fun guardarArticulo(@Valid @ModelAttribute articulo: articuloDTO,
                         result: BindingResult,
                         flash: RedirectAttributes,
+                        session: SessionStatus,
                         model: Model): String {
         if (result.hasErrors()) {
             model.addAttribute("articuloDTO", articulo)
@@ -109,6 +112,7 @@ import java.time.LocalDate
         }
         articulosService.saveArticulo(articulo)
         flash.addFlashAttribute("success", "Articulo registrado exitosamente")
+        session.setComplete()
         return "redirect:/articulos"
     }
 
@@ -130,6 +134,7 @@ import java.time.LocalDate
                            @ModelAttribute @Valid articulo: articuloDTO,
                            result: BindingResult,
                            flash: RedirectAttributes,
+                           session: SessionStatus,
                            model: Model): String {
         if(result.hasErrors()){
             model.addAttribute("articuloDTO",articulo)
@@ -143,6 +148,7 @@ import java.time.LocalDate
         }
         articulosService.updateArticulo(articulo)
         flash.addFlashAttribute("success","Articulo modificado exitosamente")
+        session.setComplete()
         return "redirect:/articulos"
     }
 }

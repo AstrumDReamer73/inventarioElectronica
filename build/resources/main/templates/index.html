@@ -37,7 +37,6 @@
 </header>
 <div class="container mt-4">
     <div class="text-center mb-4"><h1>Bienvenido</h1></div>
-    <div th:replace="~{listas/listaArticulos::success}"></div>
     <div class="row">
         <div class="col-md-6">
             <a sec:authorize="hasAnyAuthority('Jefe','Maestro','Personal','Docencia')" th:href="@{/articulos}">

@@ -42,12 +42,6 @@ import java.time.LocalDate
     fun mostrarFormularioRegistar(@PathVariable numeroSerie: String, model: Model): String{
         val articulo = articulosService.findByNumeroSerie(numeroSerie)
         val equipoMantenimientoDTO = equipoMantenimientoDTO(numeroSerie=articulo.numeroSerie)
-        model.addAttribute("equipoMantenimientoDTO", equipoMantenimientoDTO)
-        model.addAttribute("listaArticulos", articulosService.findAllArticulosDisponibles().filter{ it.estado == "Disponible"})
-        model.addAttribute("listaUsuarios",usuarioService.findByRol(listOf("Personal","Jefe")))
-        model.addAttribute("titulo","Agregar articulo en mantenimiento")
-        model.addAttribute("accion","/mantenimiento/registrar")
-        model.addAttribute("edicion",false)
         return "registrar/registrarEquipoMantenimiento"
     }
 
@@ -55,7 +49,16 @@ import java.time.LocalDate
     fun guardarArticulo(@Valid @ModelAttribute equipoMantenimiento: equipoMantenimientoDTO,
                               flash: RedirectAttributes,
                               result: BindingResult,
-                        session: SessionStatus): String{
+                              session: SessionStatus,
+                              model: Model): String{
+        if(result.hasErrors()){
+            model.addAttribute("equipoMantenimientoDTO", equipoMantenimiento)
+            model.addAttribute("listaArticulos", articulosService.findAllArticulosDisponibles().filter{ it.estado == "Disponible"})
+            model.addAttribute("listaUsuarios",usuarioService.findByRol(listOf("Personal","Jefe")))
+            model.addAttribute("titulo","Agregar articulo en mantenimiento")
+            model.addAttribute("accion","/mantenimiento/registrar")
+            model.addAttribute("edicion",false)
+        }
         flash.addFlashAttribute("success","Articulo registrado con exito")
         equiposMantenimientoService.saveEquipoMantenimiento(equipoMantenimiento)
         session.setComplete()
@@ -76,7 +79,7 @@ import java.time.LocalDate
                                                             fechaEntrada = equipoMantenimiento.fechaEntrada,
                                                             fechaSalida = equipoMantenimiento.fechaSalida,
                                                             fechaProximoMantenimiento = equipoMantenimiento.fechaProximoMantenimiento)
-
+        println("equipo en mantenimiento: $equipoMantenimientoDTO")
         model.addAttribute("equipoMantenimientoDTO",equipoMantenimientoDTO)
         model.addAttribute("listaArticulos",listOf(equipoMantenimientoDTO))
         model.addAttribute("listaUsuarios",usuarioService.findByRol(listOf("Personal","Jefe")))
@@ -89,10 +92,22 @@ import java.time.LocalDate
     @PostMapping("/editar/{IDEquipoMantenimiento}")
     fun actualizarEquipoMantenimiento(@PathVariable IDEquipoMantenimiento: Int,
                                       @Valid @ModelAttribute equipoMantenimiento: equipoMantenimientoDTO,
-                                      flash: RedirectAttributes): String {
+                                      result: BindingResult,
+                                      flash: RedirectAttributes,
+                                      session: SessionStatus,
+                                      model: Model): String {
+        if(result.hasErrors()){
+            model.addAttribute("equipoMantenimientoDTO", equipoMantenimiento)
+            model.addAttribute("listaArticulos", articulosService.findAllArticulosDisponibles().filter{ it.estado == "Disponible"})
+            model.addAttribute("listaUsuarios",usuarioService.findByRol(listOf("Personal","Jefe")))
+            model.addAttribute("titulo","Agregar articulo en mantenimiento")
+            model.addAttribute("accion","/mantenimiento/registrar")
+            model.addAttribute("edicion",false)
+        }
         if(equipoMantenimiento.estado in listOf("Cancelado","finalizado")){ flash.addFlashAttribute("success","El equipo en mantenimiento ha sido eliminado exitosamente") }
         else{ flash.addFlashAttribute("success", "El equipo en mantenimiento ha sido actualizado con éxito") }
         equiposMantenimientoService.updateEquipoMantenimiento(equipoMantenimiento)
+        session.setComplete()
         return "redirect:/mantenimiento"
     }
 

@@ -102,7 +102,7 @@
                         <div class="row mb-3 align-items-center">
                             <label class="col-md-4 col-form-label" for="fechaSalida">Fecha de salida</label>
                             <div class="col-md-8">
-                                <input th:field="*{fechaSalida}" type="date"
+                                <input th:field="*{fechaSalida}" th:value="${equipoMantenimientoDTO.fechaSalida}" type="date"
                                        id="fechaSalida" class="form-control">
                             </div>
                             <small th:if="${#fields.hasErrors('fechaSalida')}"
@@ -112,7 +112,7 @@
                         <div class="row mb-3 align-items-center">
                             <label class="col-md-4 col-form-label" for="proximoMantenimiento">Fecha del próximo mantenimiento</label>
                             <div class="col-md-8">
-                                <input th:field="*{fechaProximoMantenimiento}" type="date"
+                                <input th:field="*{fechaProximoMantenimiento}" th:value="${equipoMantenimientoDTO.fechaProximoMantenimiento}" type="date"
                                        id="proximoMantenimiento" class="form-control">
                             </div>
                         </div>

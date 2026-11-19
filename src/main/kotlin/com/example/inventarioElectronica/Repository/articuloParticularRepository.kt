@@ -21,7 +21,4 @@ import org.springframework.stereotype.Repository
     @EntityGraph(attributePaths = ["modelo"])
     @Query("select distinct a.ubicacion from articuloParticular a")
     fun findAllUbicaciones(): List<String>
-
-    @EntityGraph(attributePaths = ["modelo"])
-    fun countByModelo_Modelo(modelo: String): Long
 }

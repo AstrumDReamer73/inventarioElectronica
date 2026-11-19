@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service
                                            estado = "Disponible",
                                            modelo = modelo,
                                            fechaIngreso = dto.fechaIngreso,
-                                           fechaProximoMantenimiento = dto.fechaProximoMantenimiento,
+                                           fechaProximoMantenimiento = dto.fechaProximoMantenimiento.plusMonths(1),
                                            fechaUltimoMantenimiento = dto.fechaUltimoMantenimiento)
             )
         }
@@ -90,10 +90,10 @@ import org.springframework.stereotype.Service
     fun delete(numeroSerie: String) {
         val articulo = articuloParticularRepository.findById(numeroSerie)
             .orElseThrow { IllegalArgumentException("El articulo no existe") }
-        val modelo = articulo.modelo!!
+        val modelo = articulo.modelo!!.modelo
         expedienteMantenimientoRepository.deleteAll(expedienteMantenimientoRepository.findByNumeroSerie_NumeroSerie(articulo.numeroSerie))
         articuloParticularRepository.delete(articulo)
-        if(articuloParticularRepository.countByModelo_Modelo(modelo.modelo).toInt()==0){ modeloGeneralRepository.delete(modelo) }
+        if(modeloGeneralRepository.findById(modelo).isEmpty){ modeloGeneralRepository.deleteById(modelo) }
     }
 
     fun restaurar(numeroSerie: String) {

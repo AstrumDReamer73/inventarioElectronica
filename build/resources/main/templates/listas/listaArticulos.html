@@ -16,20 +16,19 @@
                    type="checkbox"
                    id="mostrarENEliminacion"
                    th:checked="${EnEliminacion}">
-            <label class="form-check-label" for="mostrarENEliminacion">
-                Mostrar solo los articulos en proceso de eliminacion
-            </label>
+            <label class="form-check-label" for="mostrarENEliminacion">Mostrar solo los articulos en proceso de eliminacion</label>
         </div>
         <div>
             <div class="col-12 text-end mb-3">
                 <a class="btn btn-danger" th:href="@{/articulos/exportarPDF}">
-                    <i class="fa-regular fa-file-pdf"></i>
-                    Exportar PDF</a>
+                    <i class="fa-regular fa-file-pdf"></i>Exportar PDF</a>
                 <a class="btn btn-success" th:href="@{/articulos/exportarExcel}">
-                    <i class="fa-regular fa-file-excel"></i>
-                    Exportar Excel</a>
+                    <i class="fa-regular fa-file-excel"></i>Exportar Excel</a>
+                <a class="btn btn-danger" th:href="@{/articulos/exportarEliminados}">
+                    <i class="fa-solid fa-trash-can"></i>Exportar articulos en eliminacion</a>
                 <a class="btn btn-success" th:href="@{/articulos/registrar}"
-                   sec:authorize="!hasAnyAuthority('Docencia','Maestro')">Agregar articulo</a>
+                   sec:authorize="!hasAnyAuthority('Docencia','Maestro')">
+                    <i class="fa-solid fa-plus"></i>Agregar articulo</a>
             </div>
         </div>
     </div>
@@ -105,7 +104,7 @@
 </script>
 <script>
     document.getElementById('mostrarENEliminacion').addEventListener('change', function () {
-        if (this.checked) { window.location.href = '/articulos/En_Eliminacion'}
+        if (this.checked) { window.location.href = '/articulos/Eliminacion'}
         else { window.location.href = '/articulos'}
     })
 </script>
